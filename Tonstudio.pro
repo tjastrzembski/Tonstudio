@@ -25,10 +25,31 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
-        mainwindow.cpp
+        mainwindow.cpp \
+    main.cpp \
+    mainwindow.cpp
 
 HEADERS += \
-        mainwindow.h
+        mainwindow.h \
+    mainwindow.h
 
 FORMS += \
         mainwindow.ui
+
+DISTFILES += \
+    lib/cpp_redis.lib \
+    lib/tacopie.lib
+
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/lib/ -lcpp_redis
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/lib/ -lcpp_redis
+else:unix: LIBS += -L$$PWD/lib/ -lcpp_redis
+
+INCLUDEPATH += $$PWD/include
+DEPENDPATH += $$PWD/include
+
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/lib/ -ltacopie
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/lib/ -ltacopie
+else:unix: LIBS += -L$$PWD/lib/ -ltacopie
+
+INCLUDEPATH += $$PWD/include
+DEPENDPATH += $$PWD/include
