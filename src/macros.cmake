@@ -26,14 +26,16 @@ MACRO( prepareIncludesAndLibraries )
 	SET(CPP_REDIS_LIBS "cpp_redis" CACHE PATH "cpp_redis libs to link to")
 	SET(TACOPIE_LIBS "tacopie" CACHE PATH "tacopie libs to link to")
 
+	SET(QT_DIR ${QT_DIR} "Path to Qt")
+	
 	INCLUDE_DIRECTORIES(
 		${PROJECT_INC_DIR}
 	)
 	LINK_DIRECTORIES(
 		${PROJECT_LIB_DIR}
 	)
-
-        find_package(Qt5 COMPONENTS Core Quick REQUIRED)
+	
+    find_package(Qt5 5.10.0 COMPONENTS Core Quick Qml REQUIRED)
 
 	TARGET_LINK_LIBRARIES( 
 		${PROJECT_LIBS}
@@ -41,6 +43,7 @@ MACRO( prepareIncludesAndLibraries )
 		${TACOPIE_LIBS}
 		Qt5::Core
 		Qt5::Quick
+		Qt5::Qml
 	)
 ENDMACRO( prepareIncludesAndLibraries )
 
