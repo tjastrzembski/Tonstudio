@@ -17,9 +17,16 @@ prepareIncludesAndLibraries()
 # Platform dependent definitions
 add_executable( ${PROJECT_NAME}.exe ./main.cpp "qml.qrc")
 
+if(WIN32)
+    target_link_libraries( ${PROJECT_NAME}.exe
+        ${PROJECT_LIBS})
+else()
+find_package( Threads REQUIRED)
 target_link_libraries( ${PROJECT_NAME}.exe
-	${PROJECT_LIBS}
-)
+    ${PROJECT_LIBS}
+    Threads::Threads)
+endif(WIN32)
+
 setInstallProperties()
 
 #toggleGoogleTest()

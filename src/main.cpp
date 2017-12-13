@@ -1,6 +1,6 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
-#include <cpp_redis\cpp_redis>
+#include <cpp_redis/cpp_redis>
 
 int main(int argc, char *argv[])
 {
@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
     cpp_redis::client rClient;
     std::future<cpp_redis::reply> redisAnswer;
 
-    rClient.connect("127.0.0.1", 7000);
+    rClient.connect("127.0.0.1", 6379);
     std::cout << "set hello 42" << std::endl;
     redisAnswer = rClient.set("hello", "42");
     rClient.sync_commit();
