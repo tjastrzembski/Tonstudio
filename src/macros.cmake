@@ -1,5 +1,18 @@
 #macros.cmake 2017-12-11
 
+# checkOS()
+# checks, whether WIN32, LINUX or APPLE is in use
+MACRO( checkOS )
+if(WIN32)
+    message(STATUS "win32")
+elseif(APPLE)
+    message(STATUS "mac")
+else(WIN32)
+    message(STATUS "linux")
+endif(WIN32)
+ENDMACRO( checkOS )
+
+
 # setEnviroment()
 # sets the project specified enviroment
 MACRO( setEnviroment )
@@ -21,8 +34,16 @@ MACRO( prepareIncludesAndLibraries )
 	ADD_LIBRARY(${PROJECT_LIBS} STATIC  ${ProjectSources})
 	
 	SET(PROJECT_INC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../include "Path to project includes")
-	SET(PROJECT_LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../lib "Path to project libs")
-	
+
+        if(WIN32)
+            SET(OS_SUFFIX win32)
+        elseif(APPLE)
+           SET(OS_SUFFIX mac)
+        else(WIN32)
+            SET(OS_SUFFIX linux)
+        endif(WIN32)
+        SET(PROJECT_LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../lib/${OS_SUFFIX} "Path to project libs")
+
 	SET(CPP_REDIS_LIBS "cpp_redis" CACHE PATH "cpp_redis libs to link to")
 	SET(TACOPIE_LIBS "tacopie" CACHE PATH "tacopie libs to link to")
 
