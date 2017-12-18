@@ -46,8 +46,8 @@ MACRO( prepareIncludesAndLibraries )
 	
 	SET(CPP_REDIS_LIBS "cpp_redis" CACHE PATH "cpp_redis libs to link to")
 	SET(TACOPIE_LIBS "tacopie" CACHE PATH "tacopie libs to link to")
-	SET(BSON_LIBS "bson-1.0-static" CACHE PATH "BSON libs to link to")
-	SET(MONGOC_LIBS "mongoc-1.0-static" CACHE PATH "mongo c libs to link to")
+	SET(BSON_LIBS "bson-1.0" CACHE PATH "BSON libs to link to")
+	SET(MONGOC_LIBS "mongoc-1.0" CACHE PATH "mongo c libs to link to")
 
 	SET(QT_DIR ${QT_DIR} "Path to Qt")
 	
@@ -64,6 +64,8 @@ MACRO( prepareIncludesAndLibraries )
 		${PROJECT_LIBS}
 		${CPP_REDIS_LIBS}
 		${TACOPIE_LIBS}
+		${BSON_LIBS} 
+		${MONGOC_LIBS}
 		Qt5::Core
 		Qt5::Quick
 		Qt5::Qml

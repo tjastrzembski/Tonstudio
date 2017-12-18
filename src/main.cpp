@@ -22,6 +22,10 @@ int main(int argc, char *argv[])
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
 
+	std::cout << "init Mongo C" << std::endl;
+	mongoc_init ();
+	std::cout << "mongo C initialized" << std::endl;
+
     cpp_redis::client rClient;
     std::future<cpp_redis::reply> redisAnswer;
 
