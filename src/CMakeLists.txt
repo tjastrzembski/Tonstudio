@@ -22,7 +22,7 @@ if(WIN32)
         ${PROJECT_LIBS})
 else()
 find_package( Threads REQUIRED)
-target_link_libraries( ${PROJECT_NAME}.exe
+target_link_libraries( ${PROJECT_NAME}
     ${PROJECT_LIBS}
     Threads::Threads)
 endif(WIN32)

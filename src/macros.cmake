@@ -19,33 +19,35 @@ MACRO( setEnviroment )
 	SET ( CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/.. CACHE PATH "Path to install the distribution" FORCE)
 	SET ( PROJECT_LIB ${CMAKE_INSTALL_PREFIX}/install/lib CACHE PATH "Path to install the project library")
 	SET ( PROJECT_BIN ${CMAKE_INSTALL_PREFIX}/install/bin CACHE PATH "Path to install the module executables")	
-	SET ( PROJECT_INC ${CMAKE_INSTALL_PREFIX}/install/include CACHE PATH "Path to install the project headers needed by the lib")	
+	SET ( PROJECT_INC ${CMAKE_INSTALL_PREFIX}/install/include CACHE PATH "Path to install the project headers needed by the lib")
 ENDMACRO( setEnviroment )
 
 # prepareIncludesAndLibraries()
 # sets the specific includes and libraries needed by this project
 MACRO( prepareIncludesAndLibraries )
-        SET(CMAKE_INCLUDE_CURRENT_DIR ON)
-        SET(CMAKE_AUTOMOC ON)
-        SET(CMAKE_AUTORCC ON)
+    SET(CMAKE_INCLUDE_CURRENT_DIR ON)
+    SET(CMAKE_AUTOMOC ON)
+    SET(CMAKE_AUTORCC ON)
 
-        SET(PROJECT_LIBS ${PROJECT_NAME}.lib CACHE FILE "The Project library")
+    SET(PROJECT_LIBS ${PROJECT_NAME}.lib CACHE FILE "The Project library")
 	INCLUDE("./SourceFiles.cmake")
 	ADD_LIBRARY(${PROJECT_LIBS} STATIC  ${ProjectSources})
 	
 	SET(PROJECT_INC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../include "Path to project includes")
-
-        if(WIN32)
-            SET(OS_SUFFIX win32)
-        elseif(APPLE)
-           SET(OS_SUFFIX mac)
-        else(WIN32)
-            SET(OS_SUFFIX linux)
-        endif(WIN32)
-        SET(PROJECT_LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../lib/${OS_SUFFIX} "Path to project libs")
-
+	
+	if(WIN32)
+        SET(OS_SUFFIX win32)
+    elseif(APPLE)
+        SET(OS_SUFFIX mac)
+    else(WIN32)
+        SET(OS_SUFFIX linux)
+    endif(WIN32)
+    SET(PROJECT_LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../lib/${OS_SUFFIX} "Path to project libs")
+	
 	SET(CPP_REDIS_LIBS "cpp_redis" CACHE PATH "cpp_redis libs to link to")
 	SET(TACOPIE_LIBS "tacopie" CACHE PATH "tacopie libs to link to")
+	SET(BSON_LIBS "bson-1.0-static" CACHE PATH "BSON libs to link to")
+	SET(MONGOC_LIBS "mongoc-1.0-static" CACHE PATH "mongo c libs to link to")
 
 	SET(QT_DIR ${QT_DIR} "Path to Qt")
 	
@@ -134,3 +136,54 @@ MACRO ( toggleDoxyGen )
 		ADD_SUBDIRECTORY( "../docs" "../docs" )
 	ENDIF(BUILD_DOXYGEN_DOCU)
 ENDMACRO( toggleDoxyGen )
+
+#experimental, does not have any functionality in this context
+function(WinDeployQt)
+        cmake_parse_arguments(_deploy
+                "COMPILER_RUNTIME;FORCE"
+                "TARGET"
+                "INCLUDE_MODULES;EXCLUDE_MODULES"
+                ${ARGN}
+                )
+
+        if(NOT _deploy_TARGET)
+                message(FATAL_ERROR "A TARGET must be specified")
+        endif()
+        if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+                list(APPEND _ARGS --debug)
+        elseif(CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+                list(APPEND _ARGS --release-with-debug-info)
+        elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
+                list(APPEND _ARGS --release)
+        endif()
+        if(_deploy_COMPILER_RUNTIME)
+                list(APPEND _ARGS --compiler-runtime)
+        endif()
+        if(_deploy_FORCE)
+                list(APPEND _ARGS --force)
+        endif()
+
+        foreach(mod ${_deploy_INCLUDE_MODULES})
+                string(TOLOWER ${mod} mod)
+                string(REPLACE "qt5::" "" mod ${mod})
+                list(APPEND _ARGS "--${mod}")
+        endforeach()
+        foreach(mod ${_deploy_EXCLUDE_MODULES})
+                string(TOLOWER ${mod} mod)
+                string(REPLACE "qt5::" "" mod ${mod})
+                list(APPEND _ARGS "--no-${mod}")
+        endforeach()
+
+        find_program(_deploy_PROGRAM windeployqt
+                PATHS $ENV{QTDIR}/bin/)
+        if(_deploy_PROGRAM)
+                message(STATUS "Found ${_deploy_PROGRAM}")
+        else()
+                message(FATAL_ERROR "Unable to find windeployqt")
+        endif()
+
+        if(COMPILER_RUNTIME AND NOT $ENV{VVVV})
+                message(STATUS "not set, the VC++ redistributable installer will NOT be bundled")
+        endif()
+
+endfunction()
