@@ -2,16 +2,29 @@
 
 # checkOS()
 # checks, whether WIN32, LINUX or APPLE is in use
-MACRO( checkOS )
+FUNCTION( checkOS OS)
 if(WIN32)
-    message(STATUS "win32")
+	SET(${OS} win32 PARENT_SCOPE)
 elseif(APPLE)
-    message(STATUS "mac")
+	SET(${OS} mac PARENT_SCOPE)
 else(WIN32)
-    message(STATUS "linux")
+	SET(${OS} linux PARENT_SCOPE)
 endif(WIN32)
-ENDMACRO( checkOS )
+ENDFUNCTION( checkOS )
 
+FUNCTION( checkIncludeDir )
+ get_property(dirs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
+    foreach(dir ${dirs} )
+        message(STATUS "dir ='${dir}'")
+    endforeach()
+ENDFUNCTION( checkIncludeDir )
+
+FUNCTION( checkLinkDir )
+ get_property(dirs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY LINK_DIRECTORIES)
+    foreach(dir ${dirs} )
+        message(STATUS "dir ='${dir}'")
+    endforeach()
+ENDFUNCTION( checkLinkDir )
 
 # setEnviroment()
 # sets the project specified enviroment
@@ -33,36 +46,36 @@ MACRO( prepareIncludesAndLibraries )
     INCLUDE("./SourceFiles.cmake")
     ADD_LIBRARY(${PROJECT_LIBS} STATIC  ${ProjectSources})
 
-    if(WIN32)
-    SET(OS_SUFFIX win32)
-elseif(APPLE)
-    SET(OS_SUFFIX mac)
-else(WIN32)
-    SET(OS_SUFFIX linux)
-endif(WIN32)
-    SET(PROJECT_INC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../include/${OS_SUFFIX} "Path to project includes")
-    SET(PROJECT_LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../lib/${OS_SUFFIX} "Path to project libs")
+	#check which includes and libs have to be used
+    checkOS(OS_SUFFIX)
 	
+	#includes 
+    SET(PROJECT_INC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../include/${OS_SUFFIX}) #"Path to project includes")
+	SET(REDIS_API_INC "${PROJECT_INC_DIR}/redis API" ) 						#"Path to project includes")
+	SET(BSON_INC "${PROJECT_INC_DIR}/mongoDB API/libbson-1.0" ) 			#"Path to project includes")
+	SET(MONGOC_INC "${PROJECT_INC_DIR}/mongoDB API/libmongoc-1.0") 			#"Path to project includes")
+	
+	#libs
+    SET(PROJECT_LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../lib/${OS_SUFFIX} )	#"Path to project libs"
 	SET(CPP_REDIS_LIBS "cpp_redis" CACHE PATH "cpp_redis libs to link to")
 	SET(TACOPIE_LIBS "tacopie" CACHE PATH "tacopie libs to link to")
 	SET(BSON_LIBS "bson-1.0" CACHE PATH "BSON libs to link to")
 	SET(MONGOC_LIBS "mongoc-1.0" CACHE PATH "mongo c libs to link to")
-        SET(ADDITIONAL_LIBS "-lsasl2;-lssl;-lcrypto" CACHE PATH "additional libs to link")
+    SET(ADDITIONAL_LIBS "-lsasl2;-lssl;-lcrypto" CACHE PATH "additional libs to link")
 
 	SET(QT_DIR ${QT_DIR} "Path to Qt")
 	
-        INCLUDE_DIRECTORIES(
-                ${PROJECT_INC_DIR}
-        )
-
-    get_property(dirs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
-    foreach(dir ${dirs} )
-        message(STATUS "dir ='${dir}'")
-    endforeach()
-
+	INCLUDE_DIRECTORIES(
+        ${REDIS_API_INC}
+		${BSON_INC}
+		${MONGOC_INC}
+	)
+	#checkIncludeDir()
+		
 	LINK_DIRECTORIES(
 		${PROJECT_LIB_DIR}
 	)
+	#checkLinkDir()
 	
     find_package(Qt5 5.10.0 COMPONENTS Core Quick Qml REQUIRED)
 
@@ -70,14 +83,35 @@ endif(WIN32)
 		${PROJECT_LIBS}
 		${CPP_REDIS_LIBS}
 		${TACOPIE_LIBS}
-                ${BSON_LIBS}
-                ${MONGOC_LIBS}
-                ${ADDITIONAL_LIBS}
+		${MONGOC_LIBS}
+		${ADDITIONAL_LIBS}
 		Qt5::Core
 		Qt5::Quick
 		Qt5::Qml
 	)
+	
 ENDMACRO( prepareIncludesAndLibraries )
+
+#experimental
+MACRO( WinDeployQt )
+        find_program(wDqT windeployqt
+                PATHS ${Qt5_DIR}/../../../bin/)
+
+if(wDqT)
+		INSTALL(CODE "MESSAGE(\"Found ${wDqT}\")")
+		INSTALL(CODE "execute_process(COMMAND ${wDqT}  \"--qmldir\" \"${CMAKE_CURRENT_SOURCE_DIR}\" \"${PROJECT_BIN}\")")
+	else()
+		INSTALL(CODE "MESSAGE(\"windowsDeployQt not found ${wDqT}.\")")
+	endif()
+					
+ENDMACRO( WinDeployQt )
+
+#experimental
+MACRO( CopyDLLs )    
+	checkOS(OS_SUFFIX)
+	INSTALL(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../bin/${OS_SUFFIX}/bin DESTINATION ${PROJECT_BIN}/..)	
+ENDMACRO( CopyDLLs )
+
 
 # setInstallProperties()
 # sets the install path and changes the name of lib and exec
@@ -92,6 +126,9 @@ MACRO( setInstallProperties )
 
 	INSTALL(TARGETS ${PROJECT_NAME}.exe RUNTIME DESTINATION ${PROJECT_BIN})
 
+	WinDeployQt()
+	copyDLLs()
+	
 	get_target_property( _SOURCE_FILES ${PROJECT_LIBS} SOURCES )
 	set( _HEADER_FILES )
 	foreach( _FILE ${_SOURCE_FILES} )
@@ -108,7 +145,7 @@ MACRO( setInstallProperties )
 			install( FILES 	${_FILE} DESTINATION "${PROJECT_INC}/${_PATH}")
 		endif( "${_EXTENSION}" STREQUAL ".h" )
 	endforeach( _FILE _SOURCE_FILES )
-
+	
 ENDMACRO( setInstallProperties )
 
 #toggleCpp11Compiler()
@@ -145,54 +182,3 @@ MACRO ( toggleDoxyGen )
 		ADD_SUBDIRECTORY( "../docs" "../docs" )
 	ENDIF(BUILD_DOXYGEN_DOCU)
 ENDMACRO( toggleDoxyGen )
-
-#experimental, does not have any functionality in this context
-function(WinDeployQt)
-        cmake_parse_arguments(_deploy
-                "COMPILER_RUNTIME;FORCE"
-                "TARGET"
-                "INCLUDE_MODULES;EXCLUDE_MODULES"
-                ${ARGN}
-                )
-
-        if(NOT _deploy_TARGET)
-                message(FATAL_ERROR "A TARGET must be specified")
-        endif()
-        if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-                list(APPEND _ARGS --debug)
-        elseif(CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
-                list(APPEND _ARGS --release-with-debug-info)
-        elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
-                list(APPEND _ARGS --release)
-        endif()
-        if(_deploy_COMPILER_RUNTIME)
-                list(APPEND _ARGS --compiler-runtime)
-        endif()
-        if(_deploy_FORCE)
-                list(APPEND _ARGS --force)
-        endif()
-
-        foreach(mod ${_deploy_INCLUDE_MODULES})
-                string(TOLOWER ${mod} mod)
-                string(REPLACE "qt5::" "" mod ${mod})
-                list(APPEND _ARGS "--${mod}")
-        endforeach()
-        foreach(mod ${_deploy_EXCLUDE_MODULES})
-                string(TOLOWER ${mod} mod)
-                string(REPLACE "qt5::" "" mod ${mod})
-                list(APPEND _ARGS "--no-${mod}")
-        endforeach()
-
-        find_program(_deploy_PROGRAM windeployqt
-                PATHS $ENV{QTDIR}/bin/)
-        if(_deploy_PROGRAM)
-                message(STATUS "Found ${_deploy_PROGRAM}")
-        else()
-                message(FATAL_ERROR "Unable to find windeployqt")
-        endif()
-
-        if(COMPILER_RUNTIME AND NOT $ENV{VVVV})
-                message(STATUS "not set, the VC++ redistributable installer will NOT be bundled")
-        endif()
-
-endfunction()

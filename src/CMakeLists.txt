@@ -22,7 +22,8 @@ if(WIN32)
         PRIVATE ${PROJECT_LIBS})
 else(WIN32)
 find_package( Threads REQUIRED)
-target_include_directories (${PROJECT_NAME}.exe PRIVATE ${PROJECT_INC_DIR})
+
+#target_include_directories (${PROJECT_NAME}.exe PRIVATE ${PROJECT_INC_DIR})
 target_link_libraries( ${PROJECT_NAME}.exe
     PRIVATE ${PROJECT_LIBS}
     Threads::Threads)
