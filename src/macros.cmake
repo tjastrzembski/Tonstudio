@@ -30,30 +30,36 @@ MACRO( prepareIncludesAndLibraries )
     SET(CMAKE_AUTORCC ON)
 
     SET(PROJECT_LIBS ${PROJECT_NAME}.lib CACHE FILE "The Project library")
-	INCLUDE("./SourceFiles.cmake")
-	ADD_LIBRARY(${PROJECT_LIBS} STATIC  ${ProjectSources})
-	
-	SET(PROJECT_INC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../include "Path to project includes")
-	
-	if(WIN32)
-        SET(OS_SUFFIX win32)
-    elseif(APPLE)
-        SET(OS_SUFFIX mac)
-    else(WIN32)
-        SET(OS_SUFFIX linux)
-    endif(WIN32)
+    INCLUDE("./SourceFiles.cmake")
+    ADD_LIBRARY(${PROJECT_LIBS} STATIC  ${ProjectSources})
+
+    if(WIN32)
+    SET(OS_SUFFIX win32)
+elseif(APPLE)
+    SET(OS_SUFFIX mac)
+else(WIN32)
+    SET(OS_SUFFIX linux)
+endif(WIN32)
+    SET(PROJECT_INC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../include/${OS_SUFFIX} "Path to project includes")
     SET(PROJECT_LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../lib/${OS_SUFFIX} "Path to project libs")
 	
 	SET(CPP_REDIS_LIBS "cpp_redis" CACHE PATH "cpp_redis libs to link to")
 	SET(TACOPIE_LIBS "tacopie" CACHE PATH "tacopie libs to link to")
 	SET(BSON_LIBS "bson-1.0" CACHE PATH "BSON libs to link to")
 	SET(MONGOC_LIBS "mongoc-1.0" CACHE PATH "mongo c libs to link to")
+        SET(ADDITIONAL_LIBS "-lsasl2;-lssl;-lcrypto" CACHE PATH "additional libs to link")
 
 	SET(QT_DIR ${QT_DIR} "Path to Qt")
 	
-	INCLUDE_DIRECTORIES(
-		${PROJECT_INC_DIR}
-	)
+        INCLUDE_DIRECTORIES(
+                ${PROJECT_INC_DIR}
+        )
+
+    get_property(dirs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
+    foreach(dir ${dirs} )
+        message(STATUS "dir ='${dir}'")
+    endforeach()
+
 	LINK_DIRECTORIES(
 		${PROJECT_LIB_DIR}
 	)
@@ -64,8 +70,9 @@ MACRO( prepareIncludesAndLibraries )
 		${PROJECT_LIBS}
 		${CPP_REDIS_LIBS}
 		${TACOPIE_LIBS}
-		${BSON_LIBS} 
-		${MONGOC_LIBS}
+                ${BSON_LIBS}
+                ${MONGOC_LIBS}
+                ${ADDITIONAL_LIBS}
 		Qt5::Core
 		Qt5::Quick
 		Qt5::Qml

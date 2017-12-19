@@ -19,11 +19,12 @@ add_executable( ${PROJECT_NAME}.exe ./main.cpp "qml.qrc")
 
 if(WIN32)
     target_link_libraries( ${PROJECT_NAME}.exe
-        ${PROJECT_LIBS})
-else()
+        PRIVATE ${PROJECT_LIBS})
+else(WIN32)
 find_package( Threads REQUIRED)
-target_link_libraries( ${PROJECT_NAME}
-    ${PROJECT_LIBS}
+target_include_directories (${PROJECT_NAME}.exe PRIVATE ${PROJECT_INC_DIR})
+target_link_libraries( ${PROJECT_NAME}.exe
+    PRIVATE ${PROJECT_LIBS}
     Threads::Threads)
 endif(WIN32)
 

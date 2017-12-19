@@ -1,9 +1,11 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <cpp_redis/cpp_redis>
-#include <libbson-1.0\bson.h>
-#include <libbson-1.0\bcon.h>
-#include <libmongoc-1.0\mongoc.h>
+
+#include <libbson-1.0/bcon.h>
+#include <libbson-1.0/bcon.h>
+#include <libmongoc-1.0/mongoc.h>
+
 
 
 int main(int argc, char *argv[])
