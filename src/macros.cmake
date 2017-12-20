@@ -54,6 +54,7 @@ MACRO( prepareIncludesAndLibraries )
 	SET(REDIS_API_INC "${PROJECT_INC_DIR}/redis API" ) 						#"Path to project includes")
 	SET(BSON_INC "${PROJECT_INC_DIR}/mongoDB API/libbson-1.0" ) 			#"Path to project includes")
 	SET(MONGOC_INC "${PROJECT_INC_DIR}/mongoDB API/libmongoc-1.0") 			#"Path to project includes")
+	SET(PORTAUDIO_INC "${PROJECT_INC_DIR}/portaudio")
 	
 	#libs
     SET(PROJECT_LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../lib/${OS_SUFFIX} )	#"Path to project libs"
@@ -61,14 +62,16 @@ MACRO( prepareIncludesAndLibraries )
 	SET(TACOPIE_LIBS "tacopie" CACHE PATH "tacopie libs to link to")
 	SET(BSON_LIBS "bson-1.0" CACHE PATH "BSON libs to link to")
 	SET(MONGOC_LIBS "mongoc-1.0" CACHE PATH "mongo c libs to link to")
-    SET(ADDITIONAL_LIBS "-lsasl2;-lssl;-lcrypto" CACHE PATH "additional libs to link")
+	SET(PORTAUDIO_LIBS "portaudio_x64" CACHE PATH "portaudio libs to link to")
+   # SET(ADDITIONAL_LIBS "-lsasl2;-lssl;-lcrypto" CACHE PATH "additional libs to link")
 
-	SET(QT_DIR ${QT_DIR} "Path to Qt")
+	SET(QT_DIR ${QT_DIR} )#"Path to Qt")
 	
 	INCLUDE_DIRECTORIES(
         ${REDIS_API_INC}
 		${BSON_INC}
 		${MONGOC_INC}
+		${PORTAUDIO_INC}
 	)
 	#checkIncludeDir()
 		
@@ -84,7 +87,8 @@ MACRO( prepareIncludesAndLibraries )
 		${CPP_REDIS_LIBS}
 		${TACOPIE_LIBS}
 		${MONGOC_LIBS}
-		${ADDITIONAL_LIBS}
+		${PORTAUDIO_LIBS}	
+		#${ADDITIONAL_LIBS}
 		Qt5::Core
 		Qt5::Quick
 		Qt5::Qml
@@ -109,7 +113,7 @@ ENDMACRO( WinDeployQt )
 #experimental
 MACRO( CopyDLLs )    
 	checkOS(OS_SUFFIX)
-	INSTALL(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../bin/${OS_SUFFIX}/bin DESTINATION ${PROJECT_BIN}/..)	
+	INSTALL(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../bin DESTINATION ${PROJECT_BIN}/..)	
 ENDMACRO( CopyDLLs )
 
 
@@ -126,8 +130,10 @@ MACRO( setInstallProperties )
 
 	INSTALL(TARGETS ${PROJECT_NAME}.exe RUNTIME DESTINATION ${PROJECT_BIN})
 
-	WinDeployQt()
-	copyDLLs()
+	if(WIN32)
+		WinDeployQt()
+		copyDLLs()
+	endif(WIN32)
 	
 	get_target_property( _SOURCE_FILES ${PROJECT_LIBS} SOURCES )
 	set( _HEADER_FILES )

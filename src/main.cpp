@@ -3,6 +3,7 @@
 
 #include <cpp_redis\cpp_redis>
 #include <mongoc.h>
+#include <portaudio.h>
 
 
 int main(int argc, char *argv[])
@@ -20,6 +21,10 @@ int main(int argc, char *argv[])
 #if defined(Q_OS_WIN)
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
+
+	auto err = Pa_Initialize();
+	if (err != paNoError)
+		printf("PortAudio error: %s\n", Pa_GetErrorText(err));
 
 	std::cout << "init Mongo C" << std::endl;
 	mongoc_init ();
