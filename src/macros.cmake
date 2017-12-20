@@ -62,7 +62,7 @@ MACRO( prepareIncludesAndLibraries )
 	SET(TACOPIE_LIBS "tacopie" CACHE PATH "tacopie libs to link to")
 	SET(BSON_LIBS "bson-1.0" CACHE PATH "BSON libs to link to")
 	SET(MONGOC_LIBS "mongoc-1.0" CACHE PATH "mongo c libs to link to")
-	SET(PORTAUDIO_LIBS "portaudio_x64" CACHE PATH "portaudio libs to link to")
+	SET(PORTAUDIO_LIBS "portaudio" CACHE PATH "portaudio libs to link to")
    # SET(ADDITIONAL_LIBS "-lsasl2;-lssl;-lcrypto" CACHE PATH "additional libs to link")
 
 	SET(QT_DIR ${QT_DIR} )#"Path to Qt")
@@ -113,7 +113,7 @@ ENDMACRO( WinDeployQt )
 #experimental
 MACRO( CopyDLLs )    
 	checkOS(OS_SUFFIX)
-	INSTALL(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../bin DESTINATION ${PROJECT_BIN}/..)	
+	INSTALL(DIRECTORY ${PROJECT_LIB_DIR}/bin DESTINATION ${PROJECT_BIN}/..)	
 ENDMACRO( CopyDLLs )
 
 
