@@ -1,5 +1,15 @@
 <RCC>
     <qresource prefix="/">
-        <file>mainWindow.qml</file>
+        <file>TSButton.qml</file>
+        <file>TSMenuBar.qml</file>
+        <file>TSContent.qml</file>
+        <file>TSMenu.qml</file>
+        <file>TSToolbar.qml</file>
+        <file>TSStatusbar.qml</file>
+        <file>Tonstudio.qml</file>
+        <file>Login.qml</file>
+        <file>Logo.png</file>
+        <file>Register.qml</file>
+        <file>Tonspur.qml</file>
     </qresource>
 </RCC>

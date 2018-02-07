@@ -1,41 +1,45 @@
-#pragma once
+#ifndef SOUNDCOMPONENT_H
+#define SOUNDCOMPONENT_H
 
 #include "portaudio.h"
+#include "sounddevicesettings.h"
+#include <QQuickItem>
 #include <string>
 
-typedef struct
-{
-	std::string name;
-	int			frameIndex;  /* Index into sample array. */
-	int			maxFrameIndex;
-	PaStreamCallbackResult		activeStream;
-}
-recordData;
-
-class SoundComponent
+class SoundComponent : public QQuickItem
+// Todo: the signals are strong tonight
 {
 public:
-	SoundComponent();
-	SoundComponent(const PaStreamParameters* inputP, PaStreamParameters* outputP, PaStreamCallback* paCallback);
-	~SoundComponent();
+    SoundComponent(SoundDeviceSettings *soundDeviceSettings);
+    virtual ~SoundComponent();
 
-	recordData rData;
-	PaStream* stream;
+    PaStream *stream;
 
-	static int recordCallback(const void *inputBuffer, void *outputBuffer,
-		unsigned long framesPerBuffer,
-		const PaStreamCallbackTimeInfo* timeInfo,
-		PaStreamCallbackFlags statusFlags,
-		void *userData);
+    virtual PaError openStream(const PaStreamParameters *inputP,
+                               PaStreamParameters *outputP,
+                               PaStreamCallback *paCallback);
+    virtual PaError startStream(void);
+    virtual PaError stopStream(void);
+    virtual PaError closeStream(void);
 
-	static int playCallback(const void *inputBuffer, void *outputBuffer,
-		unsigned long framesPerBuffer,
-		const PaStreamCallbackTimeInfo* timeInfo,
-		PaStreamCallbackFlags statusFlags,
-		void *userData);
+    virtual void openPlayBackStream() = 0;
+    virtual void openRecordStream() = 0;
 
-	PaError openStream(const PaStreamParameters* inputP, PaStreamParameters* outputP, PaStreamCallback* paCallback);
-	PaError startStream(void);
-	PaError stopStream(void);
-	PaError closeStream(void);
+    std::string &getName();
+    void setName(std::string name);
+    int getFrameIndex() const;
+    void setFrameIndex(int frameIndex);
+    int getLength() const;
+    void setLength(int length);
+    PaStreamCallbackResult getStreamState() const;
+    void setStreamState(PaStreamCallbackResult result);
+
+protected:
+    std::string m_name;
+    int m_frameIndex;
+    int m_maxFrameIndex;
+    PaStreamCallbackResult m_StreamState;
+    SoundDeviceSettings *m_soundDeviceSettings;
 };
+
+#endif // SOUNDCOMPONENT_H

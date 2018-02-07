@@ -5,8 +5,11 @@
 #include <mongoc.h>
 #include <portaudio.h>
 
+#include "GeneralConfigs.h"
+#include "ProjectManager.h"
+#include "SoundComponentGraphic.h"
 
-int main(int argc, char *argv[])
+bool initNeccessaryAPIs()
 {
 #if _WIN32
     WSADATA wsaData;
@@ -14,7 +17,7 @@ int main(int argc, char *argv[])
     int iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
     if (iResult != 0) {
         printf("WSAStartup failed with error: %d\n", iResult);
-        return 1;
+        return false;
     }
 #endif // _WIN32
 
@@ -22,39 +25,66 @@ int main(int argc, char *argv[])
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
 
-	auto err = Pa_Initialize();
-	if (err != paNoError)
-		printf("PortAudio error: %s\n", Pa_GetErrorText(err));
-
-	std::cout << "init Mongo C" << std::endl;
-	mongoc_init ();
-	std::cout << "mongo C initialized" << std::endl;
+    auto err = Pa_Initialize();
+    if (err != paNoError) {
+        printf("PortAudio error: %s\n", Pa_GetErrorText(err));
+        return false;
+    }
 
     cpp_redis::client rClient;
-    std::future<cpp_redis::reply> redisAnswer;
+    // check, if redis is available
+    std::cout << "check for Redis availability" << std::endl;
+    try {
+        rClient.connect("127.0.0.1", 7000);
+        rClient.disconnect();
+        std::cout << "Redis ready." << std::endl;
+    } catch (const std::exception &ex) {
+        std::cerr << "Can't connect to Redis: " << ex.what() << std::endl;
+        std::cerr << "Make sure, that Redis is Running at " << REDIS_HOST << ":"
+                  << REDIS_PORT << std::endl;
+    }
 
-    rClient.connect("127.0.0.1", 6379);
-    std::cout << "set hello 42" << std::endl;
-    redisAnswer = rClient.set("hello", "42");
-    rClient.sync_commit();
+    std::cout << "init Mongo C" << std::endl;
+    mongoc_init();
+    std::cout << "mongo C initialized" << std::endl;
+    return true;
+}
 
-    std::cout << redisAnswer.get() << std::endl;
-    std::cout << "get hello" << std::endl;
-    rClient.get("hello", [](cpp_redis::reply &reply) {
-        std::cout << reply << std::endl;
-    });
+bool terminateAPIs()
+{
+    auto err = Pa_Terminate();
+    if (err != paNoError) {
+        printf("PortAudio error: %s\n", Pa_GetErrorText(err));
+        return false;
+    }
 
-    //! also support std::future
-    //! std::future<cpp_redis::reply> get_reply = client.get("hello");
+    mongoc_cleanup();
+    std::cout << "wut" << std::endl;
+    return true;
+}
 
-    rClient.sync_commit();
+int main(int argc, char *argv[])
+{
 
+    if (!initNeccessaryAPIs()) {
+        return 1;
+    }
+
+    // init Qt
+    std::cout << "init QT" << std::endl;
     QGuiApplication app(argc, argv);
 
+    qmlRegisterType<SoundComponentGraphic>(
+        "io.qt.examples.SoundComponentGraphic", 1, 0, "SoundComponentGraphic");
+    qmlRegisterType<ProjectManager>("io.qt.examples.ProjectManager", 1, 0,
+                                    "ProjectManager");
+
     QQmlApplicationEngine engine;
-    engine.load(QUrl(QStringLiteral("qrc:/mainWindow.qml")));
+    engine.load(QUrl(QStringLiteral("qrc:/Tonstudio.qml")));
     if (engine.rootObjects().isEmpty())
         return -1;
 
-    return app.exec();
+    auto err = app.exec();
+    terminateAPIs();
+    return err;
 }

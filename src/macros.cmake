@@ -56,13 +56,28 @@ MACRO( prepareIncludesAndLibraries )
 	SET(MONGOC_INC "${PROJECT_INC_DIR}/mongoDB API/libmongoc-1.0") 			#"Path to project includes")
 	SET(PORTAUDIO_INC "${PROJECT_INC_DIR}/portaudio")
 	
-	#libs
-    SET(PROJECT_LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../lib/${OS_SUFFIX} )	#"Path to project libs"
-	SET(CPP_REDIS_LIBS "cpp_redis" CACHE PATH "cpp_redis libs to link to")
-	SET(TACOPIE_LIBS "tacopie" CACHE PATH "tacopie libs to link to")
-	SET(BSON_LIBS "bson-1.0" CACHE PATH "BSON libs to link to")
-	SET(MONGOC_LIBS "mongoc-1.0" CACHE PATH "mongo c libs to link to")
-	SET(PORTAUDIO_LIBS "portaudio" CACHE PATH "portaudio libs to link to")
+        #libs
+        SET(PROJECT_LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../lib/${OS_SUFFIX} )	#"Path to project libs"
+        if(WIN32)
+            SET(CPP_REDIS_LIBS "cpp_redis.lib" CACHE PATH "cpp_redis libs to link to")
+            SET(TACOPIE_LIBS "tacopie.lib" CACHE PATH "tacopie libs to link to")
+            SET(BSON_LIBS "bson-1.0.lib" CACHE PATH "BSON libs to link to")
+            SET(MONGOC_LIBS "mongoc-1.0.lib" CACHE PATH "mongo c libs to link to")
+            SET(PORTAUDIO_LIBS "portaudio_x64.lib" CACHE PATH "portaudio libs to link to")
+        elseif(APPLE)
+            SET(CPP_REDIS_LIBS "libcpp_redis.a" CACHE PATH "cpp_redis libs to link to")
+            SET(TACOPIE_LIBS "libtacopie.a" CACHE PATH "tacopie libs to link to")
+            SET(BSON_LIBS "libbson-1.0.dylib" CACHE PATH "BSON libs to link to")
+            SET(MONGOC_LIBS "libmongoc-1.0.dylib" CACHE PATH "mongo c libs to link to")
+            SET(PORTAUDIO_LIBS "libportaudio.dylib" CACHE PATH "portaudio libs to link to")
+        else(WIN32)
+            SET(CPP_REDIS_LIBS "libcpp_redis.a" CACHE PATH "cpp_redis libs to link to")
+            SET(TACOPIE_LIBS "libtacopie.a" CACHE PATH "tacopie libs to link to")
+            SET(BSON_LIBS "libbson-1.0.dylib" CACHE PATH "BSON libs to link to")
+            SET(MONGOC_LIBS "libmongoc-1.0.dylib" CACHE PATH "mongo c libs to link to")
+            SET(PORTAUDIO_LIBS "libportaudio.dylib" CACHE PATH "portaudio libs to link to")
+        endif(WIN32)
+
    # SET(ADDITIONAL_LIBS "-lsasl2;-lssl;-lcrypto" CACHE PATH "additional libs to link")
 
 	SET(QT_DIR ${QT_DIR} )#"Path to Qt")
