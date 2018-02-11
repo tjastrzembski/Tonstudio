@@ -2,6 +2,7 @@ import QtQuick 2.10
 import QtQuick.Controls 2.3
 import io.qt.examples.SoundComponentGraphic 1.0
 import io.qt.examples.ProjectManager 1.0
+import io.qt.examples.WindowState 1.0
 
 ApplicationWindow {
     id: window
@@ -12,6 +13,10 @@ ApplicationWindow {
 
     ProjectManager {
         id: projectManager
+    }
+
+    WindowState {
+        id: wState
     }
 
     menuBar: TSMenuBar {
@@ -30,7 +35,7 @@ ApplicationWindow {
 
     TSContent {
         id: content
-       anchors.fill: parent
+        anchors.fill: parent
         visible: true
     }
 

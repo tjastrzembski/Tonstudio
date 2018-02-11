@@ -23,7 +23,9 @@ MenuBar {
         }
         Action {
             text: qsTr("&Quit")
-            onTriggered: Qt.quit()
+            onTriggered: {
+                 window.close()
+            }
         }
     }
 

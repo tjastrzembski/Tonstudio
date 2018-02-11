@@ -1,6 +1,6 @@
 #include "SoundComponent.h"
 #include "GeneralConfigs.h"
-#include <cpp_redis\cpp_redis>
+#include <cpp_redis/cpp_redis>
 
 SoundComponent::SoundComponent(SoundDeviceSettings *soundDeviceSettings)
     : m_frameIndex(0), m_maxFrameIndex(-1), m_StreamState(paContinue),
@@ -78,3 +78,7 @@ void SoundComponent::setStreamState(PaStreamCallbackResult result)
 {
     m_StreamState = result;
 }
+
+bool SoundComponent::isMuted() const { return m_Mute; }
+
+void SoundComponent::mute(bool state) { m_Mute = state; }

@@ -3,6 +3,7 @@
 
 #include "SoundComponent.h"
 #include <string>
+#include <vector>
 
 class SoundComponentVirtual : public SoundComponent
 {
@@ -25,6 +26,8 @@ private:
                             unsigned long framesPerBuffer,
                             const PaStreamCallbackTimeInfo *timeInfo,
                             PaStreamCallbackFlags statusFlags, void *userData);
+
+    std::vector<std::string> appendScript;
 };
 
 #endif // SOUNDCOMPONENTVIRTUAL_H

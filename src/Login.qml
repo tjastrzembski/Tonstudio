@@ -1,12 +1,17 @@
 import QtQuick 2.10
-import QtQuick.Window 2.3
+import QtQuick.Controls 2.3
+import io.qt.examples.WindowState 1.0
 
-Window {
+ApplicationWindow {
     id: window
     visible: true
     width: 640
     height: 480
     title: qsTr("Tonstudio Login")
+
+    WindowState {
+        id: wState
+    }
 
     Text {
         id: labelUser
@@ -127,6 +132,18 @@ Window {
         anchors.verticalCenter: labelPasswort.verticalCenter
 
         buttonText: qsTr("Einloggen")
+
+        signal buttonClick
+        onButtonClick: {
+            wState.setState(2)
+
+            window.close()
+        }
+        MouseArea {
+            id: buttonLoginArea
+            anchors.fill: parent
+            onClicked: buttonLogin.buttonClick()
+        }
     }
 
     TSButton {
@@ -140,5 +157,16 @@ Window {
         anchors.verticalCenter: buttonLogin.verticalCenter
 
         buttonText: qsTr("Registrieren...")
+
+        signal buttonClick
+        onButtonClick: {
+            wState.setState(1)
+            window.close()
+        }
+        MouseArea {
+            id: buttonRegisterArea
+            anchors.fill: parent
+            onClicked: buttonRegister.buttonClick()
+        }
     }
 }

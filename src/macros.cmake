@@ -55,27 +55,36 @@ MACRO( prepareIncludesAndLibraries )
 	SET(BSON_INC "${PROJECT_INC_DIR}/mongoDB API/libbson-1.0" ) 			#"Path to project includes")
 	SET(MONGOC_INC "${PROJECT_INC_DIR}/mongoDB API/libmongoc-1.0") 			#"Path to project includes")
 	SET(PORTAUDIO_INC "${PROJECT_INC_DIR}/portaudio")
-	
+        SET(CASSANDRA_INC "${PROJECT_INC_DIR}/cassandra")
+        SET(LIBUV_INC "${PROJECT_INC_DIR}/libuv")
+        SET(OPENSSL_INC "${PROJECT_INC_DIR}/openssl")
+
+
         #libs
-        SET(PROJECT_LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../lib/${OS_SUFFIX} )	#"Path to project libs"
+        SET(PROJECT_LIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../lib/${OS_SUFFIX}" )	#"Path to project libs"
         if(WIN32)
-            SET(CPP_REDIS_LIBS "cpp_redis.lib" CACHE PATH "cpp_redis libs to link to")
-            SET(TACOPIE_LIBS "tacopie.lib" CACHE PATH "tacopie libs to link to")
-            SET(BSON_LIBS "bson-1.0.lib" CACHE PATH "BSON libs to link to")
-            SET(MONGOC_LIBS "mongoc-1.0.lib" CACHE PATH "mongo c libs to link to")
-            SET(PORTAUDIO_LIBS "portaudio_x64.lib" CACHE PATH "portaudio libs to link to")
+            SET(CPP_REDIS_LIBS "cpp_redis.lib" CACHE FILEPATH  "cpp_redis libs to link to")
+            SET(TACOPIE_LIBS "tacopie.lib" CACHE FILEPATH  "tacopie libs to link to")
+            SET(BSON_LIBS "bson-1.0.lib" CACHE FILEPATH  "BSON libs to link to")
+            SET(MONGOC_LIBS "mongoc-1.0.lib" CACHE FILEPATH  "mongo c libs to link to")
+            SET(PORTAUDIO_LIBS "portaudio_x64.lib" CACHE FILEPATH "portaudio libs to link to")
+            SET(CASSANDRA_LIBS "cassandra.lib" CACHE FILEPATH "cassandra libs to link to")
+            SET(LIBUV_LIBS "libuv.lib" CACHE FILEPATH "libuv libs to link to")
+            SET(LIBEAY_LIBS "libeay32.lib" CACHE FILEPATH "openSSL libs to link to")
+
+            SET(SSLEAY_LIBS "ssleay32.lib" CACHE FILEPATH "openSSL2 libs to link to")
         elseif(APPLE)
-            SET(CPP_REDIS_LIBS "libcpp_redis.a" CACHE PATH "cpp_redis libs to link to")
-            SET(TACOPIE_LIBS "libtacopie.a" CACHE PATH "tacopie libs to link to")
-            SET(BSON_LIBS "libbson-1.0.dylib" CACHE PATH "BSON libs to link to")
-            SET(MONGOC_LIBS "libmongoc-1.0.dylib" CACHE PATH "mongo c libs to link to")
-            SET(PORTAUDIO_LIBS "libportaudio.dylib" CACHE PATH "portaudio libs to link to")
+            SET(CPP_REDIS_LIBS "libcpp_redis.a" CACHE FILEPATH  "cpp_redis libs to link to")
+            SET(TACOPIE_LIBS "libtacopie.a" CACHE FILEPATH  "tacopie libs to link to")
+            SET(BSON_LIBS "libbson-1.0.dylib" CACHE FILEPATH  "BSON libs to link to")
+            SET(MONGOC_LIBS "libmongoc-1.0.dylib" CACHE FILEPATH  "mongo c libs to link to")
+            SET(PORTAUDIO_LIBS "libportaudio.dylib" CACHE FILEPATH  "portaudio libs to link to")
         else(WIN32)
-            SET(CPP_REDIS_LIBS "libcpp_redis.a" CACHE PATH "cpp_redis libs to link to")
-            SET(TACOPIE_LIBS "libtacopie.a" CACHE PATH "tacopie libs to link to")
-            SET(BSON_LIBS "libbson-1.0.dylib" CACHE PATH "BSON libs to link to")
-            SET(MONGOC_LIBS "libmongoc-1.0.dylib" CACHE PATH "mongo c libs to link to")
-            SET(PORTAUDIO_LIBS "libportaudio.dylib" CACHE PATH "portaudio libs to link to")
+            SET(CPP_REDIS_LIBS "libcpp_redis.a" CACHE FILEPATH  "cpp_redis libs to link to")
+            SET(TACOPIE_LIBS "libtacopie.a" CACHE FILEPATH  "tacopie libs to link to")
+            SET(BSON_LIBS "libbson-1.0.dylib" CACHE FILEPATH  "BSON libs to link to")
+            SET(MONGOC_LIBS "libmongoc-1.0.dylib" CACHE FILEPATH  "mongo c libs to link to")
+            SET(PORTAUDIO_LIBS "libportaudio.dylib" CACHE FILEPATH  "portaudio libs to link to")
         endif(WIN32)
 
    # SET(ADDITIONAL_LIBS "-lsasl2;-lssl;-lcrypto" CACHE PATH "additional libs to link")
@@ -83,10 +92,13 @@ MACRO( prepareIncludesAndLibraries )
 	SET(QT_DIR ${QT_DIR} )#"Path to Qt")
 	
 	INCLUDE_DIRECTORIES(
-        ${REDIS_API_INC}
+                ${REDIS_API_INC}
 		${BSON_INC}
 		${MONGOC_INC}
 		${PORTAUDIO_INC}
+                ${CASSANDRA_INC}
+                ${LIBUV_INC}
+                ${OPENSSL_INC}
 	)
 	#checkIncludeDir()
 		
@@ -102,7 +114,10 @@ MACRO( prepareIncludesAndLibraries )
 		${CPP_REDIS_LIBS}
 		${TACOPIE_LIBS}
 		${MONGOC_LIBS}
-		${PORTAUDIO_LIBS}	
+                ${PORTAUDIO_LIBS}
+                ${CASSANDRA_LIBS}
+                ${LIBUV_LIBS}
+                ${LIBEAY_LIBS}
 		#${ADDITIONAL_LIBS}
 		Qt5::Core
 		Qt5::Quick

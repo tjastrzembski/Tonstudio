@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.3
 
 ToolBar {
     id: toolBar
+
     RowLayout {
         anchors.bottom: parent.bottom
         anchors.left: parent.left
@@ -43,13 +44,30 @@ ToolBar {
 
         ToolButton {
             id: record
+
+            property var dialogAnswer: "CANCEL"
+
             width: 640
             height: 40
             text: qsTr("●")
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             topPadding: 0
             font.pointSize: 20
-            onClicked: stream.record()
+            onClicked: {
+
+                var com = Qt.createComponent("RecDialog.qml")
+                var rec = com.createObject(window)
+                rec.show()
+                //projectManager.currentProject.checkNameAvailability(recName)
+                //win = component.createObject(root)
+                //win.con
+                //win.show()
+
+                //get name
+                //projectManager.currentProject.recordSound
+
+                //stream.record()
+            }
         }
     }
 }

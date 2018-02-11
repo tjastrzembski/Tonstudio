@@ -6,8 +6,7 @@ Item {
     width: 200
     height: 100
 
-
-     property string buttonText: "Button"
+    property string buttonText: "Button"
     QtObject {
         id: internalSettings
         property color buttonColor: "lightblue"
@@ -15,11 +14,6 @@ Item {
         property color borderColor: "white"
     }
 
-    //       signal buttonClick
-
-    //       onButtonClick: {
-    //           console.log(buttonLabel.text + " clicked")
-    //        }
     Rectangle {
         id: simpleButton
         radius: 50
@@ -39,7 +33,6 @@ Item {
         MouseArea {
             id: buttonMouseArea
             anchors.fill: parent
-            //onClicked: buttonClick()
             hoverEnabled: true
             onEntered: parent.border.color = internalSettings.onHoverColor
             onExited: parent.border.color = internalSettings.borderColor

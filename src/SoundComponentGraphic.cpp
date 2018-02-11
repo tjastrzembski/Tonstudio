@@ -1,8 +1,8 @@
 #include "SoundComponentGraphic.h"
 #include "GeneralConfigs.h"
-#include < QBrush >
+#include <QBrush>
 #include <QPainter>
-#include <cpp_redis\cpp_redis>
+#include <cpp_redis/cpp_redis>
 #include <iostream>
 
 SoundComponentGraphic::SoundComponentGraphic(QQuickItem *parent)
@@ -49,7 +49,7 @@ void SoundComponentGraphic::paint(QPainter *painter)
         // this->setProperty("width", wS * redisAnswer.get().as_integer());
 
         // draw groundlines
-        QSizeF &itemSize = size();
+        QSizeF itemSize = size();
         auto ihMmono = itemSize.height() * 0.5f;
         auto ihMleft = itemSize.height() * 0.25f;
         auto ihMRight = itemSize.height() * 0.75f;

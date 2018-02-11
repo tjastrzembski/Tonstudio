@@ -2,23 +2,28 @@ import QtQuick 2.10
 import QtQuick.Window 2.3
 import QtQuick.Controls 2.3
 import QtQml.Models 2.3
+import io.qt.examples.WindowState 1.0
 
-Window {
+ApplicationWindow {
     id: window
     visible: true
     width: 640
     height: 480
     title: qsTr("Tonstudio Registration")
 
+    WindowState {
+        id: wState
+    }
+
     Text {
         id: labelUser
-        y: 170
+        y: 0
         width: 39
         height: 17
         text: qsTr("Nutzer:")
         anchors.left: image.left
         anchors.leftMargin: 0
-        anchors.verticalCenterOffset: 2
+        anchors.verticalCenterOffset: -86
         anchors.verticalCenter: parent.verticalCenter
         font.pixelSize: 12
     }
@@ -26,9 +31,10 @@ Window {
     Image {
         id: image
         x: 280
-        y: 62
+        y: 46
         width: 200
         height: 100
+        anchors.horizontalCenterOffset: 0
         anchors.bottom: boxUser.top
         anchors.bottomMargin: 5
         clip: false
@@ -76,6 +82,17 @@ Window {
         anchors.horizontalCenter: parent.horizontalCenter
 
         buttonText: qsTr("Registrieren")
+
+        signal buttonClick
+        onButtonClick: {
+            wState.setState(0)
+            window.close()
+        }
+        MouseArea {
+            id: buttonRegisterArea
+            anchors.fill: parent
+            onClicked: buttonRegister.buttonClick()
+        }
     }
 
     Text {
@@ -94,6 +111,7 @@ Window {
     }
     Rectangle {
         id: boxUser
+        x: 0
         y: 231
         height: 20
         color: inputUser.cursorVisible ? "#dddddd" : "#ffffff"
@@ -248,5 +266,30 @@ Window {
         }
         anchors.right: image.right
         anchors.rightMargin: 0
+    }
+
+    TSButton {
+        id: buttonBack
+        x: 222
+        y: 406
+        width: 200
+        height: 34
+        anchors.horizontalCenterOffset: 0
+
+        signal buttonClick
+        onButtonClick: {
+            wState.setState(0)
+            window.close()
+        }
+
+        MouseArea {
+            id: buttonBackArea
+            anchors.fill: parent
+            onClicked: buttonBack.buttonClick()
+        }
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.verticalCenterOffset: 45
+        buttonText: qsTr("Zurück")
+        anchors.verticalCenter: buttonRegister.verticalCenter
     }
 }

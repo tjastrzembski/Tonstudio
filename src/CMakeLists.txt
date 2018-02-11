@@ -26,6 +26,7 @@ find_package( Threads REQUIRED)
 #target_include_directories (${PROJECT_NAME}.exe PRIVATE ${PROJECT_INC_DIR})
 target_link_libraries( ${PROJECT_NAME}.exe
     PRIVATE ${PROJECT_LIBS}
+    PUBLIC ${SSLEAY_LIBS}
     Threads::Threads)
 endif(WIN32)
 

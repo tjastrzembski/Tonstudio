@@ -23,27 +23,5 @@ Item {
             name: colorCode
         }
         model: projectManager.currentProject.model
-        //        model: ListModel {
-        //            id: visualSoundList
-        //            ListElement {
-        //                name: "Grey"
-        //                colorCode: "grey"
-        //            }
-
-        //            ListElement {
-        //                name: "Red"
-        //                colorCode: "red"
-        //            }
-
-        //            ListElement {
-        //                name: "Blue"
-        //                colorCode: "blue"
-        //            }
-
-        //            ListElement {
-        //                name: "Green"
-        //                colorCode: "green"
-        //            }
-        //        }
     }
 }

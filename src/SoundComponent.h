@@ -33,12 +33,17 @@ public:
     void setLength(int length);
     PaStreamCallbackResult getStreamState() const;
     void setStreamState(PaStreamCallbackResult result);
+    bool isMuted() const;
+    void mute(bool state);
 
 protected:
     std::string m_name;
     int m_frameIndex;
     int m_maxFrameIndex;
     PaStreamCallbackResult m_StreamState;
+
+    // Application Related Stuff
+    bool m_Mute;
     SoundDeviceSettings *m_soundDeviceSettings;
 };
 

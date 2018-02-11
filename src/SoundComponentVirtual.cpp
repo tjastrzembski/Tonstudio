@@ -1,6 +1,6 @@
 #include "SoundComponentVirtual.h"
 #include "GeneralConfigs.h"
-#include <cpp_redis\cpp_redis>
+#include <cpp_redis/cpp_redis>
 
 int SoundComponentVirtual::recordCallback(
     const void *inputBuffer, void *outputBuffer, unsigned long framesPerBuffer,

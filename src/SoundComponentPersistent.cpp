@@ -1,6 +1,6 @@
 #include "SoundComponentPersistent.h"
 #include "GeneralConfigs.h"
-#include <cpp_redis\cpp_redis>
+#include <cpp_redis/cpp_redis>
 
 int SoundComponentPersistent::recordCallback(
     const void *inputBuffer, void *outputBuffer, unsigned long framesPerBuffer,

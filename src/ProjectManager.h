@@ -9,7 +9,7 @@
 class ProjectManager : public QQuickItem
 {
     Q_OBJECT
-    Q_PROPERTY(ProjectData *currentProject READ getCurrentProject)
+    Q_PROPERTY(ProjectData *currentProject READ getCurrentProject CONSTANT)
 public:
     ProjectManager(QQuickItem *parent = nullptr);
     ~ProjectManager();
