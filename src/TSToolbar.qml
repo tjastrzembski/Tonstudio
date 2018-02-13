@@ -45,8 +45,6 @@ ToolBar {
         ToolButton {
             id: record
 
-            property var dialogAnswer: "CANCEL"
-
             width: 640
             height: 40
             text: qsTr("●")
@@ -55,18 +53,19 @@ ToolBar {
             font.pointSize: 20
             onClicked: {
 
-                var com = Qt.createComponent("RecDialog.qml")
+                wState.setDialogState(0)
+                var com = Qt.createComponent("recDialog.qml")
                 var rec = com.createObject(window)
-                rec.show()
+
                 //projectManager.currentProject.checkNameAvailability(recName)
                 //win = component.createObject(root)
                 //win.con
                 //win.show()
 
-                //get name
-                //projectManager.currentProject.recordSound
+                //                //get name
+                //                //projectManager.currentProject.recordSound
 
-                //stream.record()
+                //                //stream.record()
             }
         }
     }

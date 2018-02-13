@@ -11,5 +11,6 @@
         <file>Logo.png</file>
         <file>Register.qml</file>
         <file>Tonspur.qml</file>
+        <file>recDialog.qml</file>
     </qresource>
 </RCC>
