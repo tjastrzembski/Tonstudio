@@ -1,4 +1,6 @@
-#pragma once
+#ifndef GENERALCONFIGS_H
+#define GENERALCONFIGS_H
+
 #include <string>
 
 #define NUM_CHANNELS (2)
@@ -10,3 +12,4 @@ enum Operation {
     SUCCESS_ = 0,
     ERROR_ = 1,
 };
+#endif // GENERALCONFIGS_H

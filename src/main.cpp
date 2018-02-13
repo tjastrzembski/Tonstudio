@@ -1,33 +1,35 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 
-#include <cpp_redis/cpp_redis>
-#include <mongoc.h>
+#include <bsoncxx/json.hpp>
+#include <mongocxx/client.hpp>
+#include <mongocxx/instance.hpp>
+#include <mongocxx/stdx.hpp>
+#include <mongocxx/uri.hpp>
 #include <portaudio.h>
 
 #include "GeneralConfigs.h"
 #include "ProjectManager.h"
+#include "RedisInitiator.h"
 #include "SoundComponentGraphic.h"
 #include "cassandra.h"
 #include "windowstate.h"
+#include <iostream>
 
 // cassandra related
 static CassCluster *cluster;
 static CassSession *session;
 static CassFuture *connect_future;
 
+using bsoncxx::builder::stream::close_array;
+using bsoncxx::builder::stream::close_document;
+using bsoncxx::builder::stream::document;
+using bsoncxx::builder::stream::finalize;
+using bsoncxx::builder::stream::open_array;
+using bsoncxx::builder::stream::open_document;
+
 bool initNeccessaryAPIs()
 {
-#if _WIN32
-    WSADATA wsaData;
-    // Initialize Winsock
-    int iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
-    if (iResult != 0) {
-        printf("WSAStartup failed with error: %d\n", iResult);
-        return false;
-    }
-#endif // _WIN32
-
 #if defined(Q_OS_WIN)
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
@@ -38,20 +40,10 @@ bool initNeccessaryAPIs()
         return false;
     }
 
-    cpp_redis::client rClient;
-    // check, if redis is available
-    std::cout << "check for Redis availability" << std::endl;
-    try {
-        rClient.connect(REDIS_HOST, REDIS_PORT);
-        rClient.disconnect();
-        std::cout << "Redis ready." << std::endl;
-    } catch (const std::exception &ex) {
-        std::cerr << "Can't connect to Redis: " << ex.what() << std::endl;
-        std::cerr << "Make sure, that Redis is Running at " << REDIS_HOST << ":"
-                  << REDIS_PORT << std::endl;
-    }
+    RedisInitiator::initRedis();
+
     std::cout << "init Mongo C" << std::endl;
-    mongoc_init();
+    mongocxx::instance instance{};
     std::cout << "mongo C initialized" << std::endl;
 
     std::cout << "init Cassandra" << std::endl;
@@ -81,7 +73,7 @@ bool terminateAPIs()
         return false;
     }
 
-    mongoc_cleanup();
+    // mongoc_cleanup();
 
     // Release/clean cassandra stuff
     cass_future_free(connect_future);
@@ -141,5 +133,5 @@ int main(int argc, char *argv[])
     }
 
     terminateAPIs();
-    return err;
+    return 0;
 }

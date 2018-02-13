@@ -1,36 +1,18 @@
-# 2017-12-11	CMakeList.txt
+# 2018-02-13	CMakeList.txt
 
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 3.9)
 
-include("./macros.cmake")
-message( STATUS "macros loaded." )
+SET(CMAKE_INCLUDE_CURRENT_DIR ON)
+SET(CMAKE_AUTOMOC ON)
+SET(CMAKE_AUTORCC ON)
 
-#enable c++11
-#toggleCpp11Compiler()
+SET(CMAKE_CURRENT_BINARY_DIR "./..")
 
-#specifies your project ( and your file )
-set(PROJECT_NAME "Tonstudio")
-project( ${PROJECT_NAME} )
-setEnviroment()
+add_executable( ${PROJECT_NAME} ./main.cpp ./qml.qrc )
 prepareIncludesAndLibraries()
-
-# Platform dependent definitions
-add_executable( ${PROJECT_NAME}.exe ./main.cpp "qml.qrc")
-
-if(WIN32)
-    target_link_libraries( ${PROJECT_NAME}.exe
-        PRIVATE ${PROJECT_LIBS})
-else(WIN32)
-find_package( Threads REQUIRED)
-
-#target_include_directories (${PROJECT_NAME}.exe PRIVATE ${PROJECT_INC_DIR})
-target_link_libraries( ${PROJECT_NAME}.exe
-    PRIVATE ${PROJECT_LIBS}
-    PUBLIC ${SSLEAY_LIBS}
-    Threads::Threads)
-endif(WIN32)
-
 setInstallProperties()
 
-#toggleGoogleTest()
-#toggleDoxyGen()
+
+
+		
+		
