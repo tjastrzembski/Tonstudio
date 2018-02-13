@@ -21,14 +21,13 @@ ApplicationWindow {
         text: qsTr("Nutzer:")
         anchors.left: image.left
         anchors.leftMargin: 0
-        anchors.verticalCenterOffset: 2
-        anchors.verticalCenter: parent.verticalCenter
+        anchors.verticalCenterOffset: 0
+        anchors.verticalCenter: boxUser.verticalCenter
         font.pixelSize: 12
     }
 
     Rectangle {
         id: boxUser
-        y: 231
         height: 20
         color: inputUser.cursorVisible ? "#dddddd" : "#ffffff"
         implicitWidth: 120
@@ -36,12 +35,12 @@ ApplicationWindow {
         border.color: "lightblue"
         border.width: inputUser.cursorVisible ? 2 : 1
         radius: 1
+        anchors.top: image.bottom
+        anchors.topMargin: 10
         anchors.left: boxPW.left
         anchors.leftMargin: 0
         anchors.right: image.right
         anchors.rightMargin: 0
-        anchors.verticalCenterOffset: 0
-        anchors.verticalCenter: labelUser.verticalCenter
 
         TextInput {
             id: inputUser
@@ -58,14 +57,12 @@ ApplicationWindow {
         y: 62
         width: 200
         height: 100
-        anchors.bottom: boxUser.top
-        anchors.bottomMargin: 5
         clip: false
         sourceSize.height: 623
         sourceSize.width: 1256
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.verticalCenterOffset: -65
-        anchors.verticalCenter: inputUser.verticalCenter
+        anchors.verticalCenterOffset: -100
+        anchors.verticalCenter: parent.verticalCenter
         fillMode: Image.Stretch
         source: "Logo.png"
     }

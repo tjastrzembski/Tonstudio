@@ -7,6 +7,14 @@ Item {
     height: 100
 
     property string buttonText: "Button"
+    property int fontSize: 20
+    property string fontColor: "#ffffff"
+
+    property int bP: 0
+    property int rP: 0
+    property int lP: 0
+    property int tP: 0
+
     QtObject {
         id: internalSettings
         property color buttonColor: "lightblue"
@@ -21,13 +29,17 @@ Item {
 
         Text {
             id: buttonLabel
-            color: "#ffffff"
+            color: fontColor
             text: buttonText
+            bottomPadding: bP
+            topPadding: tP
+            rightPadding: rP
+            leftPadding: lP
             anchors.centerIn: parent
             verticalAlignment: Text.AlignVCenter
             wrapMode: Text.WordWrap
             horizontalAlignment: Text.AlignHCenter
-            font.pixelSize: 20
+            font.pixelSize: fontSize
         }
 
         MouseArea {
