@@ -13,7 +13,7 @@ int SoundComponentPersistent::recordCallback(
     int frameIndex = data->getFrameIndex();
     int pos = frameIndex * NUM_CHANNELS;
     data->setFrameIndex(frameIndex + framesPerBuffer);
-    int bufferSize = frameIndex * NUM_CHANNELS;
+    int bufferSize = data->getFrameIndex() * NUM_CHANNELS;
 
     // setup cpp_redis
     cpp_redis::client rClient;
@@ -72,7 +72,7 @@ int SoundComponentPersistent::playCallback(
     int frameIndex = data->getFrameIndex();
     int pos = frameIndex * NUM_CHANNELS;
     data->setFrameIndex(frameIndex + framesPerBuffer);
-    int bufferSize = frameIndex * NUM_CHANNELS;
+    int bufferSize = data->getFrameIndex() * NUM_CHANNELS;
 
     std::vector<std::string> fields;
 
@@ -96,8 +96,8 @@ int SoundComponentPersistent::playCallback(
 
 void SoundComponentPersistent::openRecordStream()
 {
-    // Define InputStream
 
+    // Define InputStream
     Pa_OpenStream(&stream, m_soundDeviceSettings->getInputDevice(), nullptr,
 
                   SAMPLE_RATE, 256, paClipOff, recordCallback, this);

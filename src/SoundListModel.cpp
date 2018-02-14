@@ -6,10 +6,6 @@
 SoundListModel::SoundListModel(QList<SoundComponentGraphic *> &sounds)
     : m_sounds(sounds)
 {
-    SoundComponentGraphic *scg = new SoundComponentGraphic();
-    scg->setSoundComponent(new SoundComponentPersistent(nullptr));
-    scg->getSoundComponent()->setName("Test2");
-    m_sounds.append(scg);
 }
 
 void SoundListModel::update()

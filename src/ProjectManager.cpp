@@ -2,9 +2,9 @@
 #include "GeneralConfigs.h"
 
 ProjectManager::ProjectManager(QQuickItem *parent)
-    : QQuickItem(parent), soundDeviceSettings(new SoundDeviceSettings()),
-      project(new ProjectData(soundDeviceSettings))
+    : QQuickItem(parent), soundDeviceSettings(new SoundDeviceSettings())
 {
+    project = new ProjectData(soundDeviceSettings);
     // sth about name for project etc
     // id for project
 }

@@ -32,7 +32,7 @@ ToolBar {
             font.wordSpacing: 0
             Layout.fillHeight: false
             Layout.fillWidth: false
-            font.pointSize: 18
+            font.pointSize: 25
             onClicked: stream.stop()
         }
 
@@ -53,7 +53,7 @@ ToolBar {
             text: qsTr("●")
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             topPadding: 0
-            font.pointSize: 20
+            font.pointSize: 25
             onClicked: {
 
                 wState.setDialogState(0)
