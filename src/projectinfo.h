@@ -16,6 +16,7 @@ private:
     // other neccessary projectInformations
     std::string composer;
     std::vector<std::string> contributors;
+    std::string year;
 };
 
 #endif // PROJECTINFO_H

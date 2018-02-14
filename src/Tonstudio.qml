@@ -39,11 +39,6 @@ ApplicationWindow {
         visible: true
     }
 
-    Text {
-        id: text0
-        text: qsTr(projectManager.currentProject.testString)
-        anchors.centerIn: parent
-    }
 
     //statusBar
     footer: TSStatusbar {

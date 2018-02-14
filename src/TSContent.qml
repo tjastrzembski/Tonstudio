@@ -20,7 +20,7 @@ Item {
             height: 150
 
             //Tonspur != Soundbackend
-            name: colorCode
+            name: m_name
         }
         //model: projectManager.currentProject.model
         model:myModel
