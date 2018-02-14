@@ -18,7 +18,7 @@ void ProjectData::updateListModel()
 {
     // soundListModel.update();
     m_model = QVariant::fromValue(sounds);
-    emit
+
 }
 
 int ProjectData::getMaxSoundBarWidth()
@@ -38,92 +38,70 @@ int ProjectData::getNumSounds() { return sounds.size(); }
 
 int ProjectData::recordSound(const QString &recName)
 {
-    // Open new window for recording
-    cpp_redis::client rClient;
-    try {
-        rClient.connect(REDIS_HOST, REDIS_PORT);
-    } catch (const std::exception &ex) {
-        std::cerr << "Can't connect to Redis: " << ex.what() << std::endl;
-        std::cerr << "Make sure, that Redis is Running at " << REDIS_HOST << ":"
-                  << REDIS_PORT << std::endl;
-        return Operation::ERROR_;
-    }
-
-    // open Window for recording (Textfield(Name), recStart,  recFinish
-    // recCancel, "x"/Cancel )
-
-    // startRec
-    // check, if name is available
-
-    // cancelRec
-
-    SoundComponent *rec = new SoundComponentPersistent(soundDeviceSettings);
-
-    std::string name = "";
-    // fill with data
+    recSound = new SoundComponentPersistent(soundDeviceSettings);
 
     // mentality: keep RAW untouched, copy sound into other file
-    std::string rawName = +"_raw"; // = checkforname
-    rec->setName(rawName);
-    rec->openRecordStream();
+    std::string rawName = recName.toStdString() +"_raw"; // = checkforname
+    recSound->setName(rawName);
+    recSound->openRecordStream();
+    recSound->startStream();
 
-    while (rec->getStreamState() == paContinue) {
-        // wait For ActionEvent
-        1 + 1;
-    }
+    return Operation::SUCCESS_;
+}
 
-    // wait For ActionEvent
-    rec->stopStream();
-    rec->closeStream();
+int ProjectData::abortRecording()
+{
+    recSound->stopStream();
+    recSound->closeStream();
+
+    delete recSound;
+
+    return Operation::SUCCESS_;
+}
+
+int ProjectData::finishRecording(const QString &recName)
+{
+    recSound->stopStream();
+    recSound->closeStream();
 
     SoundComponent *rec_virtual
         = new SoundComponentVirtual(soundDeviceSettings);
-    rec_virtual->setName(name);
+    rec_virtual->setName(recName.toStdString());
     // copy the entire hashmapentry on redis
-
-    rClient.disconnect();
+    rec_virtual->openRecordStream();
 
     // needs to init SCG into 2 steps, otherwise Qt goes crazy
     SoundComponentGraphic *scg = new SoundComponentGraphic();
     scg->setSoundComponent(rec_virtual);
     sounds.append(scg);
 
+    updateListModel();
     emit numberOfSoundsChanged();
     emit maxWidthChanged();
+    emit modelChanged();
     return Operation::SUCCESS_;
 }
 
 int ProjectData::deleteSound(int id)
 {
-    cpp_redis::client rClient;
-    std::future<cpp_redis::reply> redisAnswer;
-    try {
-        rClient.connect("127.0.0.1", 7000);
-    } catch (const std::exception &ex) {
-        std::cerr << "Can't connect to Redis: " << ex.what() << std::endl;
-        std::cerr << "Make sure, that Redis is Running at " << REDIS_HOST << ":"
-                  << REDIS_PORT << std::endl;
-        return false;
-    }
-    redisTmpKeyStore.clear();
-
     auto it = sounds.begin() + id;
-    redisTmpKeyStore.push_back((*it)->getSoundComponent()->getName());
-
-    // Delete Soundstream
-    rClient.del(redisTmpKeyStore);
 
     delete *it;
     sounds.erase(it);
 
+
+    updateListModel();
     emit numberOfSoundsChanged();
     emit maxWidthChanged();
+    emit modelChanged();
 
     return Operation::SUCCESS_;
 }
 
 bool ProjectData::checkNameAvailability(const QString &recName)
 {
+    if(recName.isEmpty())
+        return false;
 
     cpp_redis::client rClient;
     std::future<cpp_redis::reply> redisAnswer;
@@ -135,7 +113,7 @@ bool ProjectData::checkNameAvailability(const QString &recName)
                   << REDIS_PORT << std::endl;
         return false;
     }
-    redisAnswer = rClient.exists(std::vector<std::string>({"Test"}));
+    redisAnswer = rClient.exists(std::vector<std::string>({recName.toStdString()}));
     rClient.sync_commit();
     rClient.disconnect();
     return redisAnswer.get().as_integer() == 0;

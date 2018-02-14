@@ -13,16 +13,27 @@ Dialog {
     dim: true
 
     closePolicy: Popup.NoAutoClose
-    QtObject {
-        id: internalSettings
-        property color buttonColor: "lightblue"
-        property color onHoverColor: "gold"
-        property color borderColor: "white"
+
+    Dialog {
+        id: notAvailable
+        title: qsTr("Name '"+ inputRecName.text +"' ist nicht verfügbar")
+        width: 300
+        height: 150
+        clip: true
+        visible: false
+        modal: true
+        dim: true
+
+        standardButtons: Dialog.Ok
+        closePolicy: Popup.NoAutoClose
     }
 
-    WindowState {
-        id: dState
+    QtObject
+    {
+        id: internal
+        property bool recording: false
     }
+
 
     contentItem: Rectangle {
         id: content
@@ -30,11 +41,12 @@ Dialog {
 
         Rectangle {
             id: recName
-            x: 132
             width: 128
             height: 20
             color: inputRecName.cursorVisible ? "#dddddd" : "#ffffff"
             radius: 1
+            anchors.left: recNameLabel.right
+            anchors.leftMargin: 0
             anchors.verticalCenterOffset: -20
             anchors.verticalCenter: parent.verticalCenter
             border.width: inputRecName.cursorVisible ? 2 : 1
@@ -49,7 +61,6 @@ Dialog {
                 anchors.bottomMargin: 0
                 anchors.leftMargin: 0
                 anchors.topMargin: 0
-                echoMode: TextInput.Password
                 font.pixelSize: 12
                 anchors.fill: parent
             }
@@ -70,6 +81,30 @@ Dialog {
             fontSize: 50
             fontColor: "Red"
             buttonText: "\u25cf"
+            MouseArea {
+                id: recArea
+                anchors.fill: parent
+                onClicked:
+                {
+                    if(!internal.recording )
+                    {
+                    if(projectManager.currentProject.checkNameAvailability(inputRecName.text))
+                    {
+                        internal.recording = true
+                        inputRecName.readOnly = true
+                        projectManager.currentProject.recordSound(inputRecName.text)
+                    }
+                    else
+                    {
+                       notAvailable.open()
+                    }
+                    }
+                    else
+                    {
+
+                    }
+                }
+            }
         }
 
         TSButton {
@@ -84,6 +119,19 @@ Dialog {
             fontColor: "black"
             buttonText: "\u25a0"
             fontSize: 40
+            MouseArea {
+                id: stopArea
+                anchors.fill: parent
+                onClicked: {
+                    if(internal.recording)
+                    {
+                        internal.recording = false
+                        inputRecName.readOnly = false
+                        projectManager.currentProject.finishRecording(inputRecName.text)
+                        dialog.accept()
+                    }
+                }
+            }
         }
 
         TSButton {
@@ -101,12 +149,23 @@ Dialog {
 
             signal buttonClick
             onButtonClick: {
-                wState.setState(2)
+
             }
             MouseArea {
                 id: cancelArea
                 anchors.fill: parent
-                onClicked: dialog.reject()
+                onClicked: {
+                    if(internal.recording)
+                    {
+                        internal.recording = false
+                        inputRecName.readOnly = false
+                        projectManager.currentProject.abortRecording()
+                    }
+                    else
+                    {
+                        dialog.reject()
+                    }
+                }
             }
         }
 

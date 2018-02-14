@@ -10,8 +10,22 @@ SoundComponent::SoundComponent(SoundDeviceSettings *soundDeviceSettings)
 
 SoundComponent::~SoundComponent()
 {
-    if (!Pa_IsStreamStopped)
+    if(!m_name.empty())
+    {
+    try {
+        cpp_redis::client rClient;
+        rClient.connect(REDIS_HOST, REDIS_PORT);
+        rClient.del(std::vector<std::string>({m_name}));
+
+    } catch (const std::exception &ex) {
+        std::cerr << "Can't connect to Redis: " << ex.what() << std::endl;
+        std::cerr << "Make sure, that Redis is Running at " << REDIS_HOST << ":"
+                  << REDIS_PORT << std::endl;
+    }
+
+    if (!Pa_IsStreamStopped(stream))
         closeStream();
+    }
 }
 
 PaError SoundComponent::openStream(const PaStreamParameters *inputP,

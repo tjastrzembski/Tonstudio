@@ -34,7 +34,10 @@ public:
     int getNumSounds();
 
     Q_INVOKABLE bool checkNameAvailability(const QString &recName);
+
     Q_INVOKABLE int recordSound(const QString &recName);
+    Q_INVOKABLE int finishRecording(const QString &recName);
+    Q_INVOKABLE int abortRecording();
     int deleteSound(int id);
 
     int cutSound(int id, long from, long to);
@@ -46,18 +49,17 @@ signals:
     void numberOfSoundsChanged();
     void maxWidthChanged();
     void modelChanged();
-    void dummy();
 
 private:
     // project related data
     QList<SoundComponentGraphic *> sounds;
     ProjectInfo projectInfo;
     QVariant m_model;
+    SoundComponent* recSound;
 
     // Variables needed by application itself
     SoundListModel soundListModel;
     SoundDeviceSettings *soundDeviceSettings;
-    std::vector<std::string> redisTmpKeyStore;
 };
 
 #endif // PROJECTDATA_H

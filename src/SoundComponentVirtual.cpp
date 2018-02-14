@@ -96,10 +96,26 @@ int SoundComponentVirtual::playCallback(
 
 void SoundComponentVirtual::openRecordStream()
 {
+    // does not really have a record function, it uses given information to
+    // recreate the modified sound
 
-    Pa_OpenStream(&stream, m_soundDeviceSettings->getInputDevice(), nullptr,
+    cpp_redis::client rClient;
+    std::future<cpp_redis::reply> redisAnswer;
+    rClient.connect(REDIS_HOST,REDIS_PORT);
+    std::vector<cpp_redis::reply> tmp ;
+ std::vector<std::pair<std::string, std::string>> keyVal;
 
-                  SAMPLE_RATE, 256, paClipOff, recordCallback, this);
+    //Todo: if multiple sounds are used, this must be modified
+    redisAnswer = rClient.hgetall(m_name+"_raw");
+    rClient.sync_commit();
+    tmp = redisAnswer.get().as_array();
+
+    for(int i = 0; i < tmp.size(); i++)
+    {
+        keyVal.push_back(std::pair<std::string,std::string>( std::to_string(i), tmp[i].as_string()));
+    }
+    rClient.hmset(m_name,keyVal);
+    rClient.sync_commit();
 }
 
 void SoundComponentVirtual::openPlayBackStream()

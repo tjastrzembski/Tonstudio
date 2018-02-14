@@ -22,6 +22,7 @@ Item {
             //Tonspur != Soundbackend
             name: colorCode
         }
-        model: projectManager.currentProject.model
+        //model: projectManager.currentProject.model
+        model:myModel
     }
 }
