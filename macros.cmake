@@ -183,7 +183,7 @@ endif(WIN32)
         ${PROJECT_NAME}
         PRIVATE ${ProjectSources}
         )
-    checkLinkDir()
+    #checkLinkDir()
 
 ENDMACRO( prepareIncludesAndLibraries )
 

@@ -5,6 +5,9 @@ import QtQuick.Layouts 1.3
 ToolBar {
     id: toolBar
 
+    RecDialog {
+        id: recDialog
+    }
     RowLayout {
         anchors.bottom: parent.bottom
         anchors.left: parent.left
@@ -54,8 +57,7 @@ ToolBar {
             onClicked: {
 
                 wState.setDialogState(0)
-                var com = Qt.createComponent("recDialog.qml")
-                var rec = com.createObject(window)
+                recDialog.open()
 
                 //projectManager.currentProject.checkNameAvailability(recName)
                 //win = component.createObject(root)
