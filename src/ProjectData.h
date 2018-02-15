@@ -16,19 +16,12 @@ class SoundListModel;
 class ProjectData : public QQuickItem
 {
     Q_OBJECT
-    Q_PROPERTY(QString testString READ testString CONSTANT)
     Q_PROPERTY(int maxSBWidth READ getMaxSoundBarWidth NOTIFY maxWidthChanged)
     Q_PROPERTY(int numSounds READ getNumSounds NOTIFY numberOfSoundsChanged)
-    Q_PROPERTY(QVariant model READ model NOTIFY modelChanged)
 public:
     ProjectData(SoundDeviceSettings *soundDeviceSettings,
                 QQuickItem *parent = nullptr);
-    ~ProjectData() = default;
-
-    QString testString();
-
-    QVariant model();
-    void updateListModel();
+    ~ProjectData();
 
     int getMaxSoundBarWidth();
     int getNumSounds();
@@ -38,27 +31,30 @@ public:
     Q_INVOKABLE int recordSound(const QString &recName);
     Q_INVOKABLE int finishRecording(const QString &recName);
     Q_INVOKABLE int abortRecording();
-    int deleteSound(int id);
+    Q_INVOKABLE int deleteSound(int id);
 
-    int cutSound(int id, long from, long to);
-    int insertSound(int id, long at);
+    Q_INVOKABLE int playSound();
+    Q_INVOKABLE int pauseSound();
+    Q_INVOKABLE int stopSound();
+
+    // Q_INVOKABLE int cutSound(int id, long from, long to);
+    // Q_INVOKABLE int insertSound(int id, long at);
 
     // Redis involved
 
 signals:
     void numberOfSoundsChanged();
     void maxWidthChanged();
-    void modelChanged();
 
 private:
     // project related data
-    QList<SoundComponentGraphic *> sounds;
+    QList<SoundComponent *> sounds;
+    QList<SoundComponent *> rawSounds;
     ProjectInfo projectInfo;
-    QVariant m_model;
-    SoundComponent* recSound;
+    SoundComponent *recSound;
 
     // Variables needed by application itself
-    SoundListModel soundListModel;
+    SoundListModel *soundListModel;
     SoundDeviceSettings *soundDeviceSettings;
 };
 

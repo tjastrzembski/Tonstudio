@@ -6,24 +6,32 @@
 #include <iostream>
 
 SoundComponentGraphic::SoundComponentGraphic(QQuickItem *parent)
-    : QQuickPaintedItem(parent), m_sc(nullptr), drawingChanged(true)
+    : QQuickPaintedItem(parent), drawingChanged(true)
 {
 }
 
-SoundComponentGraphic::~SoundComponentGraphic() { delete m_sc; }
+SoundComponentGraphic::~SoundComponentGraphic() {}
 
-QString SoundComponentGraphic::name()
-{
-    return QString(m_sc->getName().c_str());
-}
+QString SoundComponentGraphic::name() { return m_name; }
 
 void SoundComponentGraphic::setName(const QString &name)
 {
-    if (name.toStdString() == m_sc->getName())
+    if (name == m_name)
         return;
 
-    m_sc->setName(name.toStdString());
+    m_name = name;
     emit nameChanged();
+}
+
+int SoundComponentGraphic::length() { return m_Length; }
+
+void SoundComponentGraphic::setLength(int len)
+{
+    if (len == m_name)
+        return;
+
+    m_Length = len;
+    emit lengthChanged();
 }
 
 void SoundComponentGraphic::paint(QPainter *painter)
@@ -39,14 +47,12 @@ void SoundComponentGraphic::paint(QPainter *painter)
         // setup cpp_redis
         cpp_redis::client rClient;
         std::future<cpp_redis::reply> redisAnswer;
+        std::vector<cpp_redis::reply> tmp;
         rClient.connect(REDIS_HOST, REDIS_PORT);
 
         // get all values for this stream
-        redisAnswer = rClient.hlen(m_sc->getName());
-        rClient.sync_commit();
 
         auto wS = .1f;
-        // this->setProperty("width", wS * redisAnswer.get().as_integer());
 
         // draw groundlines
         QSizeF itemSize = size();
@@ -72,20 +78,27 @@ void SoundComponentGraphic::paint(QPainter *painter)
         painter->drawPolygon(middleLine, 4);
         painter->drawPolygon(middleLineRight, 4);
 
-        redisAnswer = rClient.hvals(m_sc->getName());
+        std::vector<std::string> fields;
+        for (int j = 0; j < m_Length; j++) {
+            fields.push_back(std::to_string(j));
+        }
+        redisAnswer = rClient.hmget(m_name.toStdString(), fields);
         rClient.sync_commit();
-        std::vector<cpp_redis::reply> tmp = redisAnswer.get().as_array();
+        tmp = redisAnswer.get().as_array();
 
         // init drawCoordinates for soundbar
         std::vector<QPointF> pLeft;
         std::vector<QPointF> pRight;
-        long i(0);
+
+        int i(0);
         for (auto iter = tmp.cbegin(); iter != tmp.cend();) {
             if (NUM_CHANNELS == 2) {
 
                 float leftVal = std::stof((*iter++).as_string());
                 float rightVal = std::stof((*iter++).as_string());
 
+                // qDebug() << leftVal;
+                // qDebug() << rightVal;
                 // Left Stream / Upper Bar
                 pLeft.push_back(QPointF(i * wS, ihMleft + leftVal * ihMleft));
                 pLeft.push_back(QPointF(i * wS, ihMleft - leftVal * ihMleft));
@@ -114,11 +127,3 @@ void SoundComponentGraphic::paint(QPainter *painter)
         rClient.disconnect();
     }
 }
-
-void SoundComponentGraphic::setSoundComponent(SoundComponent *sc)
-{
-    if (m_sc)
-        delete m_sc;
-    m_sc = sc;
-}
-SoundComponent *SoundComponentGraphic::getSoundComponent() { return m_sc; }

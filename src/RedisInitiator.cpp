@@ -18,6 +18,8 @@ bool RedisInitiator::initRedis()
     try {
         cpp_redis::client rClient;
         rClient.connect(REDIS_HOST, REDIS_PORT);
+        rClient.flushdb();
+        rClient.sync_commit();
         rClient.disconnect();
         std::cout << "Redis ready." << std::endl;
     } catch (const std::exception &ex) {

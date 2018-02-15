@@ -19,7 +19,9 @@ ToolBar {
             text: qsTr("►")
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             font.pointSize: 13
-            onClicked: stream.play()
+            onClicked: {
+                projectManager.currentProject.playSound()
+            }
         }
         ToolButton {
             id: stop
@@ -33,7 +35,9 @@ ToolBar {
             Layout.fillHeight: false
             Layout.fillWidth: false
             font.pointSize: 25
-            onClicked: stream.stop()
+            onClicked: {
+                projectManager.currentProject.stopSound()
+            }
         }
 
         ToolButton {
@@ -42,7 +46,9 @@ ToolBar {
             height: 40
             text: qsTr("▌▌")
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-            onClicked: stream.pause()
+            onClicked: {
+                projectManager.currentProject.pauseSound()
+            }
         }
 
         ToolButton {
@@ -55,19 +61,7 @@ ToolBar {
             topPadding: 0
             font.pointSize: 25
             onClicked: {
-
-                wState.setDialogState(0)
                 recDialog.open()
-
-                //projectManager.currentProject.checkNameAvailability(recName)
-                //win = component.createObject(root)
-                //win.con
-                //win.show()
-
-                //                //get name
-                //                //projectManager.currentProject.recordSound
-
-                //                //stream.record()
             }
         }
     }

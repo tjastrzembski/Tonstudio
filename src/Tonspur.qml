@@ -6,6 +6,7 @@ Item {
     height: 200
     width: height + scb.width
     property string name: ""
+    property int soundlength: 10
 
     Rectangle {
         id: scbBorder
@@ -78,6 +79,9 @@ Item {
             width: scb.width
             SoundComponentGraphic {
                 id: scb
+                name: scRoot.name
+                len: scRoot.soundlength
+
                 //it needs to be initialized
                 width: 13000
                 anchors.top: parent.top

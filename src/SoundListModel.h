@@ -1,23 +1,32 @@
 #ifndef SOUNDLISTMODEL_H
 #define SOUNDLISTMODEL_H
 
-#include "SoundComponentGraphic.h"
-#include <QList>
+#include "SoundComponent.h"
+#include <QAbstractListModel>
 #include <QQmlContext>
 
 // Forward declaration
 
-class SoundListModel
+class SoundListModel : public QAbstractListModel
 {
+    Q_OBJECT
 public:
-    SoundListModel(QList<SoundComponentGraphic *> &sounds);
-    ~SoundListModel() = default;
+    enum SoundRoles { NameRole, SizeRole, MuteRole };
 
+    SoundListModel(QList<SoundComponent *> &sounds, QObject *parent = nullptr);
+    ~SoundListModel() = default;
     void update();
+
+    void addSound(SoundComponent *sound);
+    int rowCount(const QModelIndex &parent = QModelIndex()) const;
+    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
+
+protected:
+    QHash<int, QByteArray> roleNames() const;
 
 private:
     QQmlContext *m_QmlCtxt;
-    QList<SoundComponentGraphic *> &m_sounds;
+    QList<SoundComponent *> &m_sounds;
 };
 
 #endif // SOUNDLISTMODEL_H

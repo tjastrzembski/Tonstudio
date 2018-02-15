@@ -6,27 +6,20 @@
 
 ProjectData::ProjectData(SoundDeviceSettings *soundDeviceSettings,
                          QQuickItem *parent)
-    : QQuickItem(parent), soundDeviceSettings(soundDeviceSettings),
-      soundListModel(sounds)
+    : QQuickItem(parent), soundDeviceSettings(soundDeviceSettings), sounds()
 {
-    soundListModel.update();
+    soundListModel = new SoundListModel(sounds);
+    soundListModel->update();
 }
 
-QString ProjectData::testString() { return QString("testStringLOL"); }
-
-void ProjectData::updateListModel()
-{
-    // soundListModel.update();
-    m_model = QVariant::fromValue(sounds);
-
-}
+ProjectData::~ProjectData() { delete soundListModel; }
 
 int ProjectData::getMaxSoundBarWidth()
 {
     int maxWidth(0);
     int currentWidth;
-    for (SoundComponentGraphic *scg : sounds) {
-        currentWidth = scg->getSoundComponent()->getLength();
+    for (SoundComponent *sc : sounds) {
+        currentWidth = sc->getLength();
         if (maxWidth < currentWidth)
             maxWidth = currentWidth;
     }
@@ -41,7 +34,7 @@ int ProjectData::recordSound(const QString &recName)
     recSound = new SoundComponentPersistent(soundDeviceSettings);
 
     // mentality: keep RAW untouched, copy sound into other file
-    std::string rawName = recName.toStdString() +"_raw"; // = checkforname
+    std::string rawName = recName.toStdString() + "_raw"; // = checkforname
     recSound->setName(rawName);
     recSound->openRecordStream();
     recSound->startStream();
@@ -64,21 +57,20 @@ int ProjectData::finishRecording(const QString &recName)
     recSound->stopStream();
     recSound->closeStream();
 
+    // "save" the raw sound for a possible commit into Cassandra
+    rawSounds.append(recSound);
+
+    // make an editable copy of the raw file,
     SoundComponent *rec_virtual
         = new SoundComponentVirtual(soundDeviceSettings);
     rec_virtual->setName(recName.toStdString());
-    // copy the entire hashmapentry on redis
     rec_virtual->openRecordStream();
 
-    // needs to init SCG into 2 steps, otherwise Qt goes crazy
-    SoundComponentGraphic *scg = new SoundComponentGraphic();
-    scg->setSoundComponent(rec_virtual);
-    sounds.append(scg);
+    soundListModel->addSound(rec_virtual);
+    soundListModel->update();
 
-    updateListModel();
     emit numberOfSoundsChanged();
     emit maxWidthChanged();
-    emit modelChanged();
     return Operation::SUCCESS_;
 }
 
@@ -89,18 +81,46 @@ int ProjectData::deleteSound(int id)
     delete *it;
     sounds.erase(it);
 
-
-    updateListModel();
+    soundListModel->update();
     emit numberOfSoundsChanged();
     emit maxWidthChanged();
-    emit modelChanged();
 
+    return Operation::SUCCESS_;
+}
+
+int ProjectData::playSound()
+{
+    for (SoundComponent *sc : sounds) {
+
+        sc->openPlayBackStream();
+        sc->startStream();
+    }
+    return Operation::SUCCESS_;
+}
+
+int ProjectData::pauseSound()
+{
+    for (SoundComponent *sc : sounds) {
+
+        sc->stopStream();
+        sc->closeStream();
+    }
+    return Operation::SUCCESS_;
+}
+
+int ProjectData::stopSound()
+{
+    for (SoundComponent *sc : sounds) {
+        sc->stopStream();
+        sc->closeStream();
+        sc->setFrameIndex(0);
+    }
     return Operation::SUCCESS_;
 }
 
 bool ProjectData::checkNameAvailability(const QString &recName)
 {
-    if(recName.isEmpty())
+    if (recName.isEmpty())
         return false;
 
     cpp_redis::client rClient;
@@ -113,14 +133,9 @@ bool ProjectData::checkNameAvailability(const QString &recName)
                   << REDIS_PORT << std::endl;
         return false;
     }
-    redisAnswer = rClient.exists(std::vector<std::string>({recName.toStdString()}));
+    redisAnswer
+        = rClient.exists(std::vector<std::string>({recName.toStdString()}));
     rClient.sync_commit();
     rClient.disconnect();
     return redisAnswer.get().as_integer() == 0;
-}
-
-QVariant ProjectData::model()
-{
-    m_model = QVariant::fromValue(sounds);
-    return m_model;
 }

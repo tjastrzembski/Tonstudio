@@ -7,9 +7,7 @@ Item {
 
     ListView {
         id: list
-        //static c++ long?
         contentWidth: projectManager.currentProject.maxSBWidth
-        //contentHeight:
         flickableDirection: Flickable.HorizontalAndVerticalFlick
         spacing: 2
         anchors.fill: parent
@@ -19,10 +17,15 @@ Item {
             y: 3
             height: 150
 
-            //Tonspur != Soundbackend
-            name: m_name
+            name: Name
+            soundlength: Size
+
         }
-        //model: projectManager.currentProject.model
-        model:myModel
+        model: SoundListModel
+        MouseArea {
+            anchors.fill: parent
+            onClicked: list.model = SoundListModel
+        }
+        //onDataChanged: console.debug(SoundListModel.rowCount())
     }
 }

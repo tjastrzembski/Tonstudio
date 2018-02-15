@@ -32,19 +32,18 @@ using bsoncxx::builder::stream::finalize;
 using bsoncxx::builder::stream::open_array;
 using bsoncxx::builder::stream::open_document;
 
-
 bool initNeccessaryAPIs()
 {
 #if defined(Q_OS_WIN)
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
-  std::cout << "init portaudio" << std::endl;
+    std::cout << "init portaudio" << std::endl;
     auto err = Pa_Initialize();
     if (err != paNoError) {
         printf("PortAudio error: %s\n", Pa_GetErrorText(err));
         return false;
     }
-  std::cout << "portaudio initialized" << std::endl;
+    std::cout << "portaudio initialized" << std::endl;
     RedisInitiator::initRedis();
 
     std::cout << "init Mongo C" << std::endl;
@@ -95,33 +94,33 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-//    auto numDevices = Pa_GetDeviceCount();
-//    const   PaDeviceInfo *deviceInfo;
-//    for( int i=0; i<numDevices; i++ )
-//    {
+    //    auto numDevices = Pa_GetDeviceCount();
+    //    const   PaDeviceInfo *deviceInfo;
+    //    for( int i=0; i<numDevices; i++ )
+    //    {
 
-//        auto deviceInfo = Pa_GetDeviceInfo( i );
-//         std::cout << i << ": " << deviceInfo->name << std::endl;
-//    }
-//    std::cout << Pa_GetDefaultInputDevice()<< std::endl;
-//    std::cout << Pa_GetDefaultOutputDevice() << std::endl;
+    //        auto deviceInfo = Pa_GetDeviceInfo( i );
+    //         std::cout << i << ": " << deviceInfo->name << std::endl;
+    //    }
+    //    std::cout << Pa_GetDefaultInputDevice()<< std::endl;
+    //    std::cout << Pa_GetDefaultOutputDevice() << std::endl;
 
-//    SoundDeviceSettings sds;
-//    SoundComponentPersistent scp(&sds);
-//    scp.setName("lll_raw");
-//    scp.openRecordStream();
-//    scp.startStream();
-//    Pa_Sleep(5000);
-//    scp.stopStream();
-//    scp.closeStream();
-//    scp.setFrameIndex(0);
-//    scp.openPlayBackStream();
-//    scp.startStream();
-//    Pa_Sleep(10000);
-//    scp.stopStream();
-//    scp.closeStream();
+    //    SoundDeviceSettings sds;
+    //    SoundComponentPersistent scp(&sds);
+    //    scp.setName("lll_raw");
+    //    scp.openRecordStream();
+    //    scp.startStream();
+    //    Pa_Sleep(5000);
+    //    scp.stopStream();
+    //    scp.closeStream();
+    //    scp.setFrameIndex(0);
+    //    scp.openPlayBackStream();
+    //    scp.startStream();
+    //    Pa_Sleep(10000);
+    //    scp.stopStream();
+    //    scp.closeStream();
 
-    //init Qt
+    // init Qt
     std::cout << "init QT" << std::endl;
     QGuiApplication app(argc, argv);
 
@@ -133,10 +132,10 @@ int main(int argc, char *argv[])
                                  "WindowState");
 
     // create Connection between Gui and main for window decision issues
-
     WindowStateSingleton *ws = WindowStateSingleton::instance();
+    ws->setState(WindowStateSingleton::SOUNDSTUDIO);
     QQmlApplicationEngine engine;
-
+    ws->setEngine(&engine);
     int err;
     while (ws->getState() != WindowStateSingleton::EXIT) {
         switch (ws->getState()) {

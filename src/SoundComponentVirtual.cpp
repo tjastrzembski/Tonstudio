@@ -13,7 +13,7 @@ int SoundComponentVirtual::recordCallback(
     int frameIndex = data->getFrameIndex();
     int pos = frameIndex * NUM_CHANNELS;
     data->setFrameIndex(frameIndex + framesPerBuffer);
-    int bufferSize = frameIndex * NUM_CHANNELS;
+    int bufferSize = data->getFrameIndex() * NUM_CHANNELS;
 
     // setup cpp_redis
     cpp_redis::client rClient;
@@ -63,16 +63,10 @@ int SoundComponentVirtual::playCallback(
     std::future<cpp_redis::reply> redisAnswer;
     rClient.connect(REDIS_HOST, REDIS_PORT);
 
-    if (data->getLength() == -1) {
-        redisAnswer = rClient.hlen(data->getName());
-        rClient.sync_commit();
-        data->setLength(redisAnswer.get().as_integer());
-    }
-
     int frameIndex = data->getFrameIndex();
     int pos = frameIndex * NUM_CHANNELS;
     data->setFrameIndex(frameIndex + framesPerBuffer);
-    int bufferSize = frameIndex * NUM_CHANNELS;
+    int bufferSize = data->getFrameIndex() * NUM_CHANNELS;
 
     std::vector<std::string> fields;
 
@@ -101,28 +95,42 @@ void SoundComponentVirtual::openRecordStream()
 
     cpp_redis::client rClient;
     std::future<cpp_redis::reply> redisAnswer;
-    rClient.connect(REDIS_HOST,REDIS_PORT);
-    std::vector<cpp_redis::reply> tmp ;
- std::vector<std::pair<std::string, std::string>> keyVal;
+    rClient.connect(REDIS_HOST, REDIS_PORT);
+    std::vector<cpp_redis::reply> tmp;
+    std::vector<std::pair<std::string, std::string>> keyVal;
+    std::vector<std::string> fields;
 
-    //Todo: if multiple sounds are used, this must be modified
-    redisAnswer = rClient.hgetall(m_name+"_raw");
+    redisAnswer = rClient.hlen(m_name + "_raw");
+    rClient.sync_commit();
+    m_maxFrameIndex = redisAnswer.get().as_integer();
+
+    // Todo: if multiple sounds are used, this must be modified
+
+    for (int j = 0; j < m_maxFrameIndex; j++) {
+        fields.push_back(std::to_string(j));
+    }
+
+    redisAnswer = rClient.hmget(m_name + "_raw", fields);
     rClient.sync_commit();
     tmp = redisAnswer.get().as_array();
 
-    for(int i = 0; i < tmp.size(); i++)
-    {
-        keyVal.push_back(std::pair<std::string,std::string>( std::to_string(i), tmp[i].as_string()));
+    int i(0);
+    for (auto iter = tmp.cbegin(); iter != tmp.cend();) {
+        keyVal.push_back(std::pair<std::string, std::string>(
+            std::to_string(i++), (*iter++).as_string()));
     }
-    rClient.hmset(m_name,keyVal);
+    rClient.hmset(m_name, keyVal);
     rClient.sync_commit();
+    keyVal.clear();
+    fields.clear();
 }
 
 void SoundComponentVirtual::openPlayBackStream()
 {
     // Define Outputstream
 
-    Pa_OpenStream(&stream, nullptr, m_soundDeviceSettings->getOutputDevice(),
+    Pa_OpenStream(&stream, m_soundDeviceSettings->getInputDevice(),
+                  m_soundDeviceSettings->getOutputDevice(),
 
                   SAMPLE_RATE, 256, paClipOff, playCallback, this);
 }

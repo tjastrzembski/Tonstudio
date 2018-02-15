@@ -1,6 +1,7 @@
 #ifndef WINDOWSTATE_H
 #define WINDOWSTATE_H
 
+#include <QQmlApplicationEngine>
 #include <QQuickItem>
 
 class WindowStateSingleton
@@ -10,11 +11,10 @@ public:
     static WindowStateSingleton *instance();
     int getState() const;
     void setState(const int &);
-    int getDialogState() const;
-    void setDialogState(const int &);
+    void setEngine(QQmlApplicationEngine *e);
+    QQmlApplicationEngine *getEngine();
 
     enum Window { LOGIN = 0, REGISTER = 1, SOUNDSTUDIO = 2, EXIT = 3 };
-    enum Dialog { OK = 0, CANCEL = 1 };
 
 private:
     WindowStateSingleton() { state = WindowStateSingleton::LOGIN; }
@@ -26,7 +26,7 @@ private:
 
     static WindowStateSingleton *windowState;
     static int state;
-    static int dialog;
+    static QQmlApplicationEngine *engine;
 };
 
 class WindowState : public QQuickItem
@@ -37,8 +37,6 @@ public:
     ~WindowState() = default;
     Q_INVOKABLE void setState(const int &);
     Q_INVOKABLE int getState();
-    Q_INVOKABLE void setDialogState(const int &);
-    Q_INVOKABLE int getDialogState();
 
 private:
     WindowStateSingleton *windowState;

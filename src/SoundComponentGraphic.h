@@ -10,7 +10,7 @@ class SoundComponentGraphic : public QQuickPaintedItem
 {
     Q_OBJECT
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
-    Q_PROPERTY(SoundComponent *backend READ getSoundComponent)
+    Q_PROPERTY(int len READ length WRITE setLength NOTIFY lengthChanged)
 public:
     explicit SoundComponentGraphic(QQuickItem *parent = nullptr);
     ~SoundComponentGraphic();
@@ -19,17 +19,18 @@ public:
 
     QString name();
     void setName(const QString &name);
-
-    void setSoundComponent(SoundComponent *sc);
-    SoundComponent *getSoundComponent();
+    int length();
+    void setLength(int len);
 
 signals:
     void nameChanged();
+    void lengthChanged();
 
 public slots:
 
 private:
-    SoundComponent *m_sc;
+    QString m_name;
+    int m_Length;
     bool drawingChanged;
 };
 
