@@ -59,6 +59,7 @@ void SoundComponentGraphic::paint(QPainter *painter)
         auto ihMmono = itemSize.height() * 0.5f;
         auto ihMleft = itemSize.height() * 0.25f;
         auto ihMRight = itemSize.height() * 0.75f;
+        auto scalefactor = 10.0f;
 
         const QPointF middleLineLeft[5] = {
             QPointF(0, ihMleft - 0.5), QPointF(itemSize.width(), ihMleft - 0.5),
@@ -100,22 +101,22 @@ void SoundComponentGraphic::paint(QPainter *painter)
                 // qDebug() << leftVal;
                 // qDebug() << rightVal;
                 // Left Stream / Upper Bar
-                pLeft.push_back(QPointF(i * wS, ihMleft + leftVal * ihMleft));
-                pLeft.push_back(QPointF(i * wS, ihMleft - leftVal * ihMleft));
+                pLeft.push_back(QPointF(i * wS, ihMleft + leftVal * ihMleft* scalefactor));
+                pLeft.push_back(QPointF(i * wS, ihMleft - leftVal * ihMleft* scalefactor));
                 pLeft.push_back(
-                    QPointF(i * wS + wS, ihMleft - leftVal * ihMleft));
+                    QPointF(i * wS + wS, ihMleft - leftVal * ihMleft * scalefactor));
                 pLeft.push_back(
-                    QPointF(i * wS + wS, ihMleft + leftVal * ihMleft));
+                    QPointF(i * wS + wS, ihMleft + leftVal * ihMleft * scalefactor));
 
                 // Right Stream / Bottom Bar
                 pRight.push_back(
-                    QPointF(i * wS, ihMRight + rightVal * ihMleft));
+                    QPointF(i * wS, ihMRight + rightVal * ihMleft * scalefactor));
                 pRight.push_back(
-                    QPointF(i * wS, ihMRight - rightVal * ihMleft));
+                    QPointF(i * wS, ihMRight - rightVal * ihMleft * scalefactor));
                 pRight.push_back(
-                    QPointF(i * wS + wS, ihMRight - rightVal * ihMleft));
+                    QPointF(i * wS + wS, ihMRight - rightVal * ihMleft * scalefactor));
                 pRight.push_back(QPointF(
-                    i * wS + wS, ihMRight + rightVal * ihMleft)); /* right */
+                    i * wS + wS, ihMRight + rightVal * ihMleft * scalefactor)); /* right */
                 i++;
                 painter->drawPolygon(pLeft.data(), 4);
                 painter->drawPolygon(pRight.data(), 4);

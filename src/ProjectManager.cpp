@@ -25,6 +25,12 @@ int ProjectManager::loadProject()
     return Operation::ERROR_;
 }
 
-int ProjectManager::saveProject() { return Operation::ERROR_; }
+int ProjectManager::saveProject() {
 
-int ProjectManager::deleteProject() { return Operation::ERROR_; }
+    return Operation::ERROR_; }
+
+int ProjectManager::deleteProject() {
+
+    delete project;
+
+    return Operation::ERROR_; }

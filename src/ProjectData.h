@@ -21,7 +21,11 @@ class ProjectData : public QQuickItem
 public:
     ProjectData(SoundDeviceSettings *soundDeviceSettings,
                 QQuickItem *parent = nullptr);
+    ProjectData(std::string& projectName, SoundDeviceSettings *soundDeviceSettings,
+                QQuickItem *parent = nullptr);
     ~ProjectData();
+
+    int saveProjectData();
 
     int getMaxSoundBarWidth();
     int getNumSounds();

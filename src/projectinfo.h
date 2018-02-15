@@ -9,9 +9,6 @@ class ProjectInfo
 public:
     ProjectInfo();
 
-    // getter/setter?
-
-private:
     std::string m_ProjectName;
     // other neccessary projectInformations
     std::string composer;

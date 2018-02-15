@@ -93,6 +93,12 @@ int main(int argc, char *argv[])
     if (!initNeccessaryAPIs()) {
         return 1;
     }
+    std::string lol("123456");
+    std::hash<std::string> h,j;
+    std::cout << h(lol) << std::endl;
+    std::cout << h(lol) << std::endl;
+    std::cout << j(lol) << std::endl;
+
 
     //    auto numDevices = Pa_GetDeviceCount();
     //    const   PaDeviceInfo *deviceInfo;
