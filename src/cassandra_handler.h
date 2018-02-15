@@ -9,6 +9,9 @@ public:
     ~Cassandra_Handler();
     static Cassandra_Handler *instance();
 
+    bool saveSoundComponent(std::vector<std::pair<std::string, std::string>>* sounds );
+    bool loadSoundComponent(std::string& pName,std::vector<std::vector<std::pair<std::string, std::string>>*>& sounds);
+
 private:
     Cassandra_Handler() {}
     Cassandra_Handler(const Cassandra_Handler &) {}

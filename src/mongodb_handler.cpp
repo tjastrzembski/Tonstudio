@@ -18,3 +18,44 @@ MongoDB_Handler* MongoDB_Handler::instance()
         mongoDB = new MongoDB_Handler();
     return mongoDB;
 }
+
+
+bool  MongoDB_Handler::checkForUser(std::string& user)
+{
+    bool userExists(true);
+    //check, if username exists
+    return userExists;
+}
+
+bool MongoDB_Handler::login(std::string &user, std::string &pw)
+{
+    std::hash<std::string> h;
+    auto hPW = h(pw);
+
+    int aPW = 0;//get value for 'userID'
+    authenticated = hPW == aPW;
+
+    return authenticated;
+
+}
+
+bool MongoDB_Handler::registerUser(std::string &user, std::string &pw)
+{
+    bool userRegistered(false);
+    //write new User into mongo
+
+    return userRegistered;
+
+}
+
+bool MongoDB_Handler::saveProjectInfo(ProjectInfo& pInfo)
+{
+    //put all information of pInfo into mongo
+    return false;
+}
+
+bool MongoDB_Handler::loadProjectInfo(std::string &pName, ProjectInfo &pInfo)
+{
+    //save everything in pInfo
+    return false;
+}

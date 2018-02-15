@@ -16,3 +16,15 @@ Cassandra_Handler* Cassandra_Handler::instance()
         cassandra = new Cassandra_Handler();
     return cassandra;
 }
+
+bool Cassandra_Handler::saveSoundComponent(std::vector<std::pair<std::string, std::string> > *sounds)
+{
+    return true;
+}
+
+bool Cassandra_Handler::loadSoundComponent(std::string &pName, std::vector<std::vector<std::pair<std::string, std::string> > *> &sounds)
+{
+    //for(all entries
+
+    return true;
+}
