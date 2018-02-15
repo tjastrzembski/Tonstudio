@@ -2,20 +2,17 @@
 #define PROJECTINFO_H
 
 #include <string>
-#include <vector>
+#include <list>
 
 class ProjectInfo
 {
 public:
     ProjectInfo();
 
-    // getter/setter?
-
-private:
     std::string m_ProjectName;
     // other neccessary projectInformations
     std::string composer;
-    std::vector<std::string> contributors;
+    std::list<std::string> contributors;
     std::string year;
 };
 

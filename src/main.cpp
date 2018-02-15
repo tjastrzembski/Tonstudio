@@ -13,17 +13,12 @@
 #include "ProjectManager.h"
 #include "RedisInitiator.h"
 #include "SoundComponentGraphic.h"
-#include "cassandra.h"
+#include "cassandra_handler.h"
 #include "windowstate.h"
 #include <iostream>
 
 #include <SoundComponentPersistent.h>
 #include <sounddevicesettings.h>
-
-// cassandra related
-static CassCluster *cluster;
-static CassSession *session;
-static CassFuture *connect_future;
 
 using bsoncxx::builder::stream::close_array;
 using bsoncxx::builder::stream::close_document;
@@ -50,22 +45,7 @@ bool initNeccessaryAPIs()
     mongocxx::instance instance{};
     std::cout << "mongo C initialized" << std::endl;
 
-    std::cout << "init Cassandra" << std::endl;
-    // Setup and connect to cluster
-    cluster = cass_cluster_new();
-    session = cass_session_new();
-
-    // Add contact points
-    cass_cluster_set_contact_points(cluster, "127.0.0.1");
-
-    // Provide the cluster object as configuration to connect the session
-    connect_future = cass_session_connect(session, cluster);
-
-    // This operation will block until the result is ready
-    CassError rc = cass_future_error_code(connect_future);
-
-    std::cout << "Connect result: " << cass_error_desc(rc) << std::endl;
-
+   Cassandra_Handler::instance()->initCassandra();
     return true;
 }
 
@@ -76,13 +56,7 @@ bool terminateAPIs()
         printf("PortAudio error: %s\n", Pa_GetErrorText(err));
         return false;
     }
-
-    // mongoc_cleanup();
-
-    // Release/clean cassandra stuff
-    cass_future_free(connect_future);
-    cass_session_free(session);
-    cass_cluster_free(cluster);
+    Cassandra_Handler::instance()->terminateCassandra();
 
     return true;
 }
@@ -93,32 +67,6 @@ int main(int argc, char *argv[])
     if (!initNeccessaryAPIs()) {
         return 1;
     }
-
-    //    auto numDevices = Pa_GetDeviceCount();
-    //    const   PaDeviceInfo *deviceInfo;
-    //    for( int i=0; i<numDevices; i++ )
-    //    {
-
-    //        auto deviceInfo = Pa_GetDeviceInfo( i );
-    //         std::cout << i << ": " << deviceInfo->name << std::endl;
-    //    }
-    //    std::cout << Pa_GetDefaultInputDevice()<< std::endl;
-    //    std::cout << Pa_GetDefaultOutputDevice() << std::endl;
-
-    //    SoundDeviceSettings sds;
-    //    SoundComponentPersistent scp(&sds);
-    //    scp.setName("lll_raw");
-    //    scp.openRecordStream();
-    //    scp.startStream();
-    //    Pa_Sleep(5000);
-    //    scp.stopStream();
-    //    scp.closeStream();
-    //    scp.setFrameIndex(0);
-    //    scp.openPlayBackStream();
-    //    scp.startStream();
-    //    Pa_Sleep(10000);
-    //    scp.stopStream();
-    //    scp.closeStream();
 
     // init Qt
     std::cout << "init QT" << std::endl;

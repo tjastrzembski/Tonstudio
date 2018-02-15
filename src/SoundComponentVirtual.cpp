@@ -132,7 +132,7 @@ void SoundComponentVirtual::openPlayBackStream()
     Pa_OpenStream(&stream, m_soundDeviceSettings->getInputDevice(),
                   m_soundDeviceSettings->getOutputDevice(),
 
-                  SAMPLE_RATE, 256, paClipOff, playCallback, this);
+                  SAMPLE_RATE, 1024, paClipOff, playCallback, this);
 }
 
 SoundComponentVirtual::SoundComponentVirtual(

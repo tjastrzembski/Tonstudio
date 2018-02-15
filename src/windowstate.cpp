@@ -6,9 +6,10 @@ QQmlApplicationEngine *WindowStateSingleton::engine;
 
 WindowStateSingleton::~WindowStateSingleton()
 {
-    if (windowState)
-        delete windowState;
+    auto tmp = windowState;
     windowState = nullptr;
+    if (tmp)
+        delete tmp;
 }
 
 WindowStateSingleton *WindowStateSingleton::instance()

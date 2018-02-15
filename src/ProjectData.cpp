@@ -6,13 +6,45 @@
 
 ProjectData::ProjectData(SoundDeviceSettings *soundDeviceSettings,
                          QQuickItem *parent)
-    : QQuickItem(parent), soundDeviceSettings(soundDeviceSettings), sounds()
+    : QQuickItem(parent), soundDeviceSettings(soundDeviceSettings), sounds(), rawSounds()
 {
     soundListModel = new SoundListModel(sounds);
     soundListModel->update();
 }
 
+ProjectData::ProjectData(std::string& projectName, SoundDeviceSettings *soundDeviceSettings,
+                         QQuickItem *parent)
+    : QQuickItem(parent), soundDeviceSettings(soundDeviceSettings), sounds(),rawSounds()
+{
+    soundListModel = new SoundListModel(sounds);
+
+    //get all stuff from cassandra and MongoDB; projectName shall be the identifier
+
+    //mongoDB stuff
+    projectInfo.m_ProjectName = projectName;
+    projectInfo.year;
+    projectInfo.contributors;
+    projectInfo.composer;
+
+    //Cassandra
+    rawSounds.append(nullptr);
+    soundListModel->addSound(nullptr);
+
+
+
+    soundListModel->update();
+}
+
 ProjectData::~ProjectData() { delete soundListModel; }
+
+
+int ProjectData::saveProjectData()
+{
+
+
+   return Operation::SUCCESS_;
+}
+
 
 int ProjectData::getMaxSoundBarWidth()
 {
